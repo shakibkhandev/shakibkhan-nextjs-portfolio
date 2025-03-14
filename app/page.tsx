@@ -700,6 +700,7 @@ export default function Page() {
 
                 <a
                   href="https://x.com/shakib_khan_dev"
+                  target="_blank"
                   className={`group p-6 rounded-2xl transition-all duration-300
                   ${
                     darkMode
@@ -818,6 +819,7 @@ export default function Page() {
           <div className="relative group">
             <a
               href="https://github.com/shakibkhandev"
+              target="_blank"
               className={`relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer
                 transition-all duration-300 ease-in-out
                 ${
@@ -857,6 +859,7 @@ export default function Page() {
           <div className="relative group">
             <a
               href="https://www.linkedin.com/in/shakib-khan-dev/"
+              target="_blank"
               className={`relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer
                 transition-all duration-300 ease-in-out
                 ${
@@ -937,6 +940,7 @@ export default function Page() {
           <div className="relative group">
             <a
               href="https://x.com/shakib_khan_dev"
+              target="_blank"
               className={`relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer
                 transition-all duration-300 ease-in-out
                 ${
