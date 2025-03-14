@@ -1,6 +1,7 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Page() {
@@ -36,13 +37,12 @@ export default function Page() {
 
     // Set ripple position to theme toggle button position
     const button = document.querySelector('[aria-label="Toggle theme"]');
-    const rect = button.getBoundingClientRect();
+    const rect = button?.getBoundingClientRect();
     ripple.style.setProperty("--ripple-color", newDarkMode ? "#000" : "#fff");
-    ripple.style.setProperty("--ripple-top", `${rect.top + rect.height / 2}px`);
-    ripple.style.setProperty(
-      "--ripple-left",
-      `${rect.left + rect.width / 2}px`
-    );
+    if (rect) {
+      ripple.style.setProperty("--ripple-top", `${rect.top + rect.height / 2}px`);
+      ripple.style.setProperty("--ripple-left", `${rect.left + rect.width / 2}px`);
+    }
 
     // Add transition class
     document.documentElement.classList.add("theme-transition");
@@ -68,7 +68,7 @@ export default function Page() {
   // Set initial background color
   useEffect(() => {
     document.body.style.backgroundColor = darkMode ? "#000000" : "#ffffff";
-  }, []);
+  }, [darkMode]);
 
   // Add this useEffect to set up global transition styles
   useEffect(() => {
@@ -109,7 +109,9 @@ export default function Page() {
       }
     `;
     document.head.appendChild(style);
-    return () => document.head.removeChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   // Modify the animation variants
@@ -241,7 +243,7 @@ export default function Page() {
             >
               <div className="flex-1">
                 <h1 className="text-4xl md:text-5xl font-bold flex items-center gap-2">
-                  Hi, I'm Shakib <span className="animate-wave">👋</span>
+                  Hi, I&apos;m Shakib <span className="animate-wave">👋</span>
                 </h1>
                 <p
                   className={`text-lg mt-3 ${
@@ -281,12 +283,12 @@ export default function Page() {
                         p-4 rounded-lg border border-gray-200 dark:border-gray-700
                         ${darkMode ? "bg-gray-900/30" : "bg-gray-50/50"}`}
               >
-                I'm a passionate developer with a focus on web and mobile
+                I&apos;m a passionate developer with a focus on web and mobile
                 development. I enjoy learning new technologies, creating
                 innovative solutions, and exploring the intersection of AI and
-                business. Currently, I'm working on personal projects to enhance
+                business. Currently, I&apos;m working on personal projects to enhance
                 my skills in JavaScript, Kotlin, and more. Always open to
-                collaborating and learning from others. Let's build something
+                collaborating and learning from others. Let&apos;s build something
                 awesome together!
               </p>
             </motion.section>
@@ -362,7 +364,7 @@ export default function Page() {
                       Secondary School Certificate (SSC)
                     </h3>
                     <p className="text-sm font-medium mt-1">2024</p>
-                    <p className="mt-1 text-sm">Currently Pursuing</p>
+                    <p className="mt-1 text-sm">Successfully Passed</p>
                   </div>
                 </div>
               </div>
@@ -435,7 +437,7 @@ export default function Page() {
                   className={`text-lg transition-colors duration-300
               ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                 >
-                  I've worked on a variety of projects, from simple websites to
+                  I&apos;ve worked on a variety of projects, from simple websites to
                   complex web applications.
                 </p>
               </div>
@@ -631,7 +633,7 @@ export default function Page() {
                   className={`text-4xl font-bold mt-4 mb-3 transition-colors duration-300
                   ${darkMode ? "text-gray-100" : "text-gray-900"}`}
                 >
-                  Let's work together
+                  Let&apos;s work together
                 </h2>
                 <p
                   className={`text-lg transition-colors duration-300
@@ -644,7 +646,7 @@ export default function Page() {
 
               <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
                 <a
-                  href="mailto:your.email@example.com"
+                  href="mailto:mdshakibkhan.dev@gmail.com"
                   className={`group p-6 rounded-2xl transition-all duration-300
                   ${
                     darkMode
@@ -690,14 +692,14 @@ export default function Page() {
                           darkMode ? "text-gray-400" : "text-gray-600"
                         }`}
                       >
-                        your.email@example.com
+                        mdshakibkhan.dev@gmail.com
                       </p>
                     </div>
                   </div>
                 </a>
 
                 <a
-                  href="https://twitter.com/yourusername"
+                  href="https://x.com/shakib_khan_dev"
                   className={`group p-6 rounded-2xl transition-all duration-300
                   ${
                     darkMode
@@ -742,7 +744,7 @@ export default function Page() {
                           darkMode ? "text-gray-400" : "text-gray-600"
                         }`}
                       >
-                        @yourusername
+                        @shakib_khan_dev
                       </p>
                     </div>
                   </div>
@@ -774,7 +776,7 @@ export default function Page() {
         <nav className="flex items-center gap-4">
           {/* Home Link */}
           <div className="relative group">
-            <a
+            <Link
               href="/"
               className={`relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer
                 transition-all duration-300 ease-in-out
@@ -799,7 +801,7 @@ export default function Page() {
                 <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
-            </a>
+            </Link>
             <span
               className={`absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none
               ${
@@ -815,7 +817,7 @@ export default function Page() {
           {/* GitHub Link */}
           <div className="relative group">
             <a
-              href="https://github.com/yourusername"
+              href="https://github.com/shakibkhandev"
               className={`relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer
                 transition-all duration-300 ease-in-out
                 ${
@@ -854,7 +856,7 @@ export default function Page() {
           {/* LinkedIn Link - Add after GitHub link */}
           <div className="relative group">
             <a
-              href="https://linkedin.com/in/yourusername"
+              href="https://www.linkedin.com/in/shakib-khan-dev/"
               className={`relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer
                 transition-all duration-300 ease-in-out
                 ${
@@ -895,7 +897,7 @@ export default function Page() {
           {/* Facebook Link - Add after LinkedIn link */}
           <div className="relative group">
             <a
-              href="https://facebook.com/yourusername"
+              href="https://www.facebook.com/mdshakibkhan.dev"
               className={`relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer
                 transition-all duration-300 ease-in-out
                 ${
@@ -934,7 +936,7 @@ export default function Page() {
           {/* Twitter/X Link */}
           <div className="relative group">
             <a
-              href="https://x.com/yourusername"
+              href="https://x.com/shakib_khan_dev"
               className={`relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer
                 transition-all duration-300 ease-in-out
                 ${
