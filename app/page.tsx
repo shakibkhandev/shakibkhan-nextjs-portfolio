@@ -90,7 +90,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-4xl font-bold text-white mb-2 mt-36"
+              className={`text-4xl font-bold text-white mb-2 mt-36 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}
             >
               Welcome
             </motion.h1>
