@@ -10,7 +10,13 @@ import {
   TimelineTitle,
 } from "@/components/ui/timeline";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
-import { AnimatePresence, motion } from "framer-motion";
+import { 
+  AnimatePresence, 
+  motion, 
+  useScroll, 
+  useTransform, 
+  useSpring 
+} from "framer-motion";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
@@ -42,6 +48,34 @@ const loadingVariants = {
   },
 };
 
+const textVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.5, ease: "easeOut" }
+  }
+};
+
+const staggerContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
 export default function Home() {
   const { isDarkMode } = useGlobalContext();
   const [isOnBoarding, setIsOnBoarding] = useState(true);
@@ -59,84 +93,103 @@ export default function Home() {
     }
   }, []);
 
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   return (
-    <main
-      className={`min-h-screen w-screen ${
-        isDarkMode ? "bg-gray-900" : "bg-gray-50"
-      }`}
-    >
+    <main className={`min-h-screen w-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
+      <motion.div
+        className={`fixed top-0 left-0 right-0 h-0.5 ${isDarkMode ? "bg-white" : "bg-black"} origin-left z-50`}
+        style={{ scaleX }}
+      />
       <AnimatePresence mode="wait">
         {isOnBoarding ? (
-          <motion.div className="absolute inset-0 flex items-center justify-center">
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="w-2 h-2 bg-blue-500 rounded-full absolute"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{
-                  scale: [0, 1, 0],
-                  opacity: [0, 1, 0],
-                  x: Math.cos((i * 45 * Math.PI) / 180) * 40,
-                  y: Math.sin((i * 45 * Math.PI) / 180) * 40,
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  delay: i * 0.1,
-                }}
-              />
-            ))}
-            <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className={`text-4xl font-bold text-white mb-2 mt-36 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}
-            >
-              Welcome
-            </motion.h1>
+          <motion.div 
+            className="absolute inset-0 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className={`w-16 h-16 rounded-full ${
+                isDarkMode ? "border-white" : "border-black"
+              } border-2 border-t-transparent animate-spin`}
+            />
           </motion.div>
         ) : (
-          <motion.section className="max-w-3xl mx-auto p-4">
+          <motion.section className="max-w-4xl mx-auto px-4 py-16">
             <motion.div
-              className="flex items-center gap-6"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 25,
-              }}
+              className="flex flex-col md:flex-row items-center gap-8"
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainerVariants}
             >
-              <div className="flex-1">
-                <h1
-                  className={`text-4xl md:text-5xl font-bold flex items-center gap-2 ${
-                    isDarkMode ? "text-gray-300" : "text-gray-800"
+              <div className="flex-1 text-center md:text-left">
+                <motion.h1
+                  variants={textVariants}
+                  className={`text-4xl md:text-6xl font-bold mb-4 ${
+                    isDarkMode ? "text-white" : "text-gray-900"
                   }`}
                 >
                   Hi, I&apos;m Shakib <span className="animate-wave">👋</span>
-                </h1>
-                <p
-                  className={`text-lg mt-3 ${
-                    isDarkMode ? "text-gray-300" : "text-gray-600"
-                  }`}
+                </motion.h1>
+                <motion.p
+                  variants={textVariants}
+                  className={`text-lg ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}
                 >
-                  Web Developer and Android Developer. I love building things
-                  and helping people. Very active on Twitter.
-                </p>
+                  Full Stack Developer & UI/UX Enthusiast
+                </motion.p>
+                <motion.div
+                  variants={textVariants}
+                  className="mt-8 flex gap-4 justify-center md:justify-start"
+                >
+                  <a
+                    href="#contact"
+                    className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
+                      isDarkMode 
+                        ? "bg-white text-gray-900 hover:bg-gray-100" 
+                        : "bg-gray-900 text-white hover:bg-gray-800"
+                    }`}
+                  >
+                    Get in Touch
+                  </a>
+                  <a
+                    href="#projects"
+                    className={`px-6 py-3 rounded-lg font-medium border transition-all duration-300 transform hover:scale-105 ${
+                      isDarkMode 
+                        ? "border-white text-white hover:bg-white/10" 
+                        : "border-gray-900 text-gray-900 hover:bg-gray-900/10"
+                    }`}
+                  >
+                    View Projects
+                  </a>
+                </motion.div>
               </div>
 
-              <div className="shrink-0">
-                <div className="relative w-24 h-24 md:w-40 md:h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden shadow-lg transition-all duration-300 hover:scale-105">
-                  <Image
-                    src="/profile.png"
-                    alt="Shakib's profile"
-                    fill
-                    className="object-cover"
-                    priority
-                    sizes="(max-width: 768px) 96px, (max-width: 1024px) 160px, 192px"
-                  />
+              <motion.div 
+                variants={cardVariants}
+                className="shrink-0"
+              >
+                <div className="relative w-48 h-48 md:w-56 md:h-56">
+                  <div className={`absolute inset-0 rounded-2xl ${
+                    isDarkMode ? "bg-white/10" : "bg-gray-900/5"
+                  }`} />
+                  <div className="absolute inset-1 rounded-2xl overflow-hidden">
+                    <Image
+                      src="/profile.png"
+                      alt="Shakib's profile"
+                      fill
+                      className="object-cover transition-transform duration-300 hover:scale-105"
+                      priority
+                      sizes="(max-width: 768px) 192px, 224px"
+                    />
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
 
             {/* About Section */}
@@ -262,62 +315,41 @@ export default function Home() {
 
             {/* Skills Section */}
             <motion.section
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 25,
-              }}
-              className="mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="mt-24 scroll-mt-16"
             >
-              <h2
-                className={`text-2xl font-bold mb-4 flex items-center gap-2 ${
-                  isDarkMode ? "text-gray-300" : "text-gray-800"
-                }`}
+              <motion.div 
+                className="flex flex-wrap gap-3 justify-center md:justify-start"
+                variants={staggerContainerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
               >
-                Skills
-              </h2>
-              <div className="flex flex-wrap gap-2">
                 {[
-                  { name: "React", url: "https://react.dev" },
-                  { name: "Next.js", url: "https://nextjs.org" },
-                  { name: "TypeScript", url: "https://www.typescriptlang.org" },
-                  { name: "Node.js", url: "https://nodejs.org" },
-                  { name: "Python", url: "https://www.python.org" },
-                  { name: "Postgres", url: "https://www.postgresql.org" },
-                  { name: "Docker", url: "https://www.docker.com" },
-                  { name: "Java", url: "https://www.java.com" },
-                  { name: "C++", url: "https://isocpp.org" },
-                  { name: "React Native", url: "https://reactnative.dev" },
-                  {
-                    name: "Jetpack Compose",
-                    url: "https://developer.android.com/jetpack/compose",
-                  },
-                  { name: "Prisma", url: "https://www.prisma.io" },
-                  { name: "Kotlin", url: "https://kotlinlang.org" },
+                  "React", "Next.js", "TypeScript", "Node.js",
+                  "Python", "Postgres", "Docker", "Java", "Kotlin"
                 ].map((skill, index) => (
-                  <a
+                  <motion.div
                     key={index}
-                    href={skill.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer
-                              transition-all duration-300 hover:scale-105
-                              ${
-                                isDarkMode
-                                  ? "bg-gray-800 text-gray-200 border border-gray-700 hover:bg-gray-700 hover:border-gray-600"
-                                  : "bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200 hover:border-gray-300"
-                              }`}
+                    variants={cardVariants}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer
+                      transition-all duration-300 hover:scale-105 ${
+                      isDarkMode 
+                        ? "bg-white/10 text-white hover:bg-white/20" 
+                        : "bg-gray-900/5 text-gray-900 hover:bg-gray-900/10"
+                    }`}
                   >
-                    {skill.name}
-                  </a>
+                    {skill}
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </motion.section>
 
             {/* Projects Section */}
-            <motion.section className="mt-16">
+            <motion.section id="projects" className="mt-24 scroll-mt-16">
               <div className="text-center mb-8">
                 <span
                   className={`px-4 py-2 rounded-full text-sm font-medium inline-block
@@ -453,7 +485,7 @@ export default function Home() {
             </motion.section>
 
             {/* Contact Section */}
-            <motion.section className="mt-16 mb-24">
+            <motion.section id="contact" className="mt-24 scroll-mt-16 mb-24">
               <div className="text-center mb-8">
                 <span
                   className={`px-4 py-2 rounded-full text-sm font-medium inline-block
@@ -501,19 +533,18 @@ export default function Home() {
                           }`}
                     >
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
-                        viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="transition-transform duration-300 group-hover:scale-110"
+                        viewBox="0 0 24 24"
                       >
-                        <rect width="20" height="16" x="2" y="4" rx="2" />
-                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
                       </svg>
                     </div>
                     <div className="flex-1">
@@ -554,20 +585,21 @@ export default function Home() {
                               : "bg-gray-200 text-gray-700"
                           }`}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="transition-transform duration-300 group-hover:scale-110"
-                      >
-                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-                      </svg>
+                   <svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="transition-transform duration-300 group-hover:scale-110"
+>
+  <path d="M17 3h4l-7.5 8.5L21 21h-4l-5-6-5 6H3l7.5-9.5L3 3h4l5 6z" />
+</svg>
+
                     </div>
                     <div className="flex-1">
                       <h3
@@ -575,7 +607,7 @@ export default function Home() {
                           isDarkMode ? "text-gray-200" : "text-gray-900"
                         }`}
                       >
-                        Twitter
+                        X
                       </h3>
                       <p
                         className={`text-sm ${
@@ -587,6 +619,54 @@ export default function Home() {
                     </div>
                   </div>
                 </a>
+              </div>
+            </motion.section>
+
+            {/* Newsletter Section */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="mt-24 mb-16"
+            >
+              <div className={`max-w-2xl mx-auto p-8 rounded-2xl ${
+                isDarkMode ? "bg-white/5" : "bg-gray-900/5"
+              }`}>
+                <div className="text-center">
+                  <h2 className={`text-2xl md:text-3xl font-bold mb-4 ${
+                    isDarkMode ? "text-white" : "text-gray-900"
+                  }`}>
+                    Stay Updated
+                  </h2>
+                  <p className={`text-sm md:text-base mb-8 ${
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}>
+                    Subscribe to my newsletter for the latest updates on projects, articles, and tech insights.
+                  </p>
+                </div>
+                
+                <form onSubmit={(e) => e.preventDefault()} className="flex flex-col md:flex-row gap-4">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className={`flex-1 px-4 py-3 rounded-lg text-sm md:text-base outline-none ${
+                      isDarkMode 
+                        ? "bg-white/10 text-white placeholder:text-gray-400 focus:bg-white/20" 
+                        : "bg-white text-gray-900 placeholder:text-gray-500 focus:bg-gray-50"
+                    } transition-all duration-300`}
+                  />
+                  <button
+                    type="submit"
+                    className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
+                      isDarkMode 
+                        ? "bg-white text-gray-900 hover:bg-gray-100" 
+                        : "bg-gray-900 text-white hover:bg-gray-800"
+                    }`}
+                  >
+                    Subscribe
+                  </button>
+                </form>
               </div>
             </motion.section>
           </motion.section>
