@@ -397,6 +397,15 @@ export default function Home() {
                     techStacks: ["Next.js", "TypeScript", "Radix"],
                     url: "https://github.com/shakibkhandev/Expense-Tracker-Web-App",
                   },
+                  {
+                    name: "Spaceship",
+                    image: "https://raw.githubusercontent.com/shakibkhandev/Spaceship-Static-Site/refs/heads/main/assets/01.png",
+                    timeline: "Jan 2025 - Feb 2025",  
+                    details:
+                      "Spaceship is a static website built with HTML, CSS, and JavaScript. It features a modern design and provides information about the app.",
+                    techStacks: ["HTML", "CSS", "JS"],
+                    url: "https://spaceshipweb.netlify.app/",
+                  }
                 ].map((item: any, index: number) => (
                   <SwiperSlide>
                     <div
