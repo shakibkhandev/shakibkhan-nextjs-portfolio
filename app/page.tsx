@@ -26,6 +26,62 @@ import "swiper/css/navigation";
 import ExpenseTrackerImage from "../assets/expense-tracker.png";
 import filmflareImage from "../assets/filmflare.png";
 
+
+const projects = [
+  {
+    name: "Filmflare",
+    image: filmflareImage,
+    timeline: "Jan 2025 - Feb 2025",
+    details:
+      "Filmflare is a movie discovery web application built with Next.js and TypeScript. It allows users to explore trending movies, search for their favorites, and view detailed information about each film.",
+    techStacks: ["Next.js", "TypeScript", "TMDB", "Swiper"],
+    url: "https://github.com/shakibkhandev/Filmflare-Movie-Web-App",
+  },
+  {
+    name: "Expense Tracker",
+    image: ExpenseTrackerImage,
+    timeline: "Jan 2025 - Feb 2025",
+    details:
+      "Expense Tracker is a web application designed to help users manage their finances. Built with Next.js and TypeScript, it allows users to track expenses The app uses Local database.",
+    techStacks: ["Next.js", "TypeScript", "Radix"],
+    url: "https://github.com/shakibkhandev/Expense-Tracker-Web-App",
+  },
+  {
+    name: "Spaceship",
+    image: "https://raw.githubusercontent.com/shakibkhandev/Spaceship-Static-Site/refs/heads/main/assets/01.png",
+    timeline: "Jan 2025 - Feb 2025",  
+    details:
+      "Spaceship is a static website built with HTML, CSS, and JavaScript. It features a modern design and provides information about the app.",
+    techStacks: ["HTML", "CSS", "JS"],
+    url: "https://spaceshipweb.netlify.app/",
+  },
+  {
+    name: "Retro Arcade",
+    image: "https://raw.githubusercontent.com/shakibkhandev/Retro-Arcade-Static-Site/refs/heads/main/assets/01.png",
+    timeline: "Jan 2025 - Feb 2025",
+    details: "Retro Arcade is a static website built with HTML, CSS, and JavaScript. It features a modern design and provides information about the app.",
+    techStacks: ["HTML", "CSS", "JS"],
+    url: "https://retroarcadeweb.netlify.app/",
+  },
+  {
+    name: "NexTech",
+    image: "https://raw.githubusercontent.com/shakibkhandev/NexTech-Static-Site/refs/heads/main/assets/01.png",
+    timeline: "Jan 2025 - Feb 2025",
+    details: "NexTech is a static website built with HTML, CSS, and JavaScript. It features a modern design and provides information about the app.",
+    techStacks: ["HTML", "CSS", "JS"],
+    url: "https://nextechweb.netlify.app/",
+  },
+  {
+    name: "Gamer Hub",
+    image: "https://raw.githubusercontent.com/shakibkhandev/Gamer-Hub-Static-Site/refs/heads/main/assets/01.png",
+    timeline: "Jan 2025 - Feb 2025",
+    details: "Gamer Hub is a static website built with HTML, CSS, and JavaScript. It features a modern design and provides information about the app.",
+    techStacks: ["HTML", "CSS", "JS"],
+    url: "https://gamerhubweb.netlify.app/",
+  }
+]
+
+
 // Add this for the initial loading animation
 const loadingVariants = {
   initial: {
@@ -378,35 +434,7 @@ export default function Home() {
               </div>
 
               <Swiper className="mySwiper" rewind={true}>
-                {[
-                  {
-                    name: "Filmflare",
-                    image: filmflareImage,
-                    timeline: "Jan 2025 - Feb 2025",
-                    details:
-                      "Filmflare is a movie discovery web application built with Next.js and TypeScript. It allows users to explore trending movies, search for their favorites, and view detailed information about each film.",
-                    techStacks: ["Next.js", "TypeScript", "TMDB", "Swiper"],
-                    url: "https://github.com/shakibkhandev/Filmflare-Movie-Web-App",
-                  },
-                  {
-                    name: "Expense Tracker",
-                    image: ExpenseTrackerImage,
-                    timeline: "Jan 2025 - Feb 2025",
-                    details:
-                      "Expense Tracker is a web application designed to help users manage their finances. Built with Next.js and TypeScript, it allows users to track expenses The app uses Local database.",
-                    techStacks: ["Next.js", "TypeScript", "Radix"],
-                    url: "https://github.com/shakibkhandev/Expense-Tracker-Web-App",
-                  },
-                  {
-                    name: "Spaceship",
-                    image: "https://raw.githubusercontent.com/shakibkhandev/Spaceship-Static-Site/refs/heads/main/assets/01.png",
-                    timeline: "Jan 2025 - Feb 2025",  
-                    details:
-                      "Spaceship is a static website built with HTML, CSS, and JavaScript. It features a modern design and provides information about the app.",
-                    techStacks: ["HTML", "CSS", "JS"],
-                    url: "https://spaceshipweb.netlify.app/",
-                  }
-                ].map((item: any, index: number) => (
+                {projects.map((item: any, index: number) => (
                   <SwiperSlide>
                     <div
                       className={`rounded-lg overflow-hidden border ${
