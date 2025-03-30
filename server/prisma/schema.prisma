@@ -60,7 +60,7 @@ model Portfolio {
 
 model Education {
   id         String   @id @default(cuid())
-  schoolName String
+  institution String
   degree    String
   startDate  DateTime
   endDate    DateTime

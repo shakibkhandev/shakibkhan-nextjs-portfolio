@@ -9,16 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addNewsletter = exports.getNewsletters = exports.deleteEducation = exports.updateEducation = exports.addEducation = exports.getEducations = exports.deleteProject = exports.updateProject = exports.addProject = exports.getProjects = exports.deleteSkill = exports.updateSkill = exports.addSkills = exports.getSkills = exports.addWorkExperience = exports.deleteWorkExperience = exports.updateWorkExperience = exports.getWorkExperiences = exports.deletePortfolioInformation = exports.updatePortfolioInformation = exports.getPortfolioInformation = exports.changeCurrentPassword = exports.deleteProfileInformation = exports.updateProfileInformation = exports.getProfileInformation = void 0;
+exports.addNewsletter = exports.getNewsletters = exports.deleteEducation = exports.updateEducation = exports.addEducation = exports.getEducations = exports.deleteProject = exports.updateProject = exports.addProject = exports.getProjects = exports.deleteSkill = exports.updateSkill = exports.addSkills = exports.getSkills = exports.addWorkExperience = exports.deleteWorkExperience = exports.updateWorkExperience = exports.getWorkExperiences = exports.createPortfolio = exports.deletePortfolioInformation = exports.updatePortfolioInformation = exports.getPortfolioInformation = exports.changeCurrentPassword = exports.deleteProfileInformation = exports.updateProfileInformation = exports.getProfileInformation = void 0;
 const prisma_1 = require("../services/prisma");
-const asyncHandler_1 = require("../utils/asyncHandler");
-const ApiResponse_1 = require("../utils/ApiResponse");
 const ApiError_1 = require("../utils/ApiError");
+const ApiResponse_1 = require("../utils/ApiResponse");
+const asyncHandler_1 = require("../utils/asyncHandler");
 exports.getProfileInformation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.id;
     const user = yield prisma_1.prisma.user.findUnique({
         where: {
-            id: userId
+            id: userId,
         },
         select: {
             id: true,
@@ -28,33 +28,39 @@ exports.getProfileInformation = (0, asyncHandler_1.asyncHandler)((req, res) => _
             provider: true,
             isAdmin: true,
             updatedAt: true,
-            createdAt: true
-        }
+            createdAt: true,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, user, "Profile information fetched successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, user, "Profile information fetched successfully"));
 }));
 exports.updateProfileInformation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.id;
     const user = yield prisma_1.prisma.user.update({
         where: {
-            id: userId
+            id: userId,
         },
         data: {
             name: req.body.name,
             email: req.body.email,
-            avatar: req.body.avatar
-        }
+            avatar: req.body.avatar,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, user, "Profile information updated successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, user, "Profile information updated successfully"));
 }));
 exports.deleteProfileInformation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.id;
     const user = yield prisma_1.prisma.user.delete({
         where: {
-            id: userId
-        }
+            id: userId,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, user, "Profile information deleted successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, user, "Profile information deleted successfully"));
 }));
 exports.changeCurrentPassword = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { oldPassword, newPassword, confirmNewPassword } = req.body;
@@ -87,17 +93,26 @@ exports.changeCurrentPassword = (0, asyncHandler_1.asyncHandler)((req, res) => _
         .json(new ApiResponse_1.ApiResponse(200, {}, "Password changed successfully"));
 }));
 exports.getPortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const portfolio = yield prisma_1.prisma.portfolio.findMany();
-    if (!portfolio.length || !portfolio[0] || !portfolio) {
+    const portfolio = yield prisma_1.prisma.portfolio.findMany({
+        include: {
+            education: true,
+            workExperience: true,
+            projects: true,
+            skills: true,
+        },
+    });
+    if (portfolio.length < 1) {
         throw new ApiError_1.ApiError(404, "Portfolio not found");
     }
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, portfolio[0], "Portfolio information fetched successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, portfolio[0], "Portfolio information fetched successfully"));
 }));
 exports.updatePortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolioId = req.params.id;
     const portfolio = yield prisma_1.prisma.portfolio.update({
         where: {
-            id: portfolioId
+            id: portfolioId,
         },
         data: {
             name: req.body.name,
@@ -107,58 +122,104 @@ exports.updatePortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res)
             github_url: req.body.github_url,
             linkedin_url: req.body.linkedin_url,
             facebook_url: req.body.facebook_url,
-        }
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, portfolio, "Portfolio information updated successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, portfolio, "Portfolio information updated successfully"));
 }));
 exports.deletePortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolioId = req.params.id;
     const portfolio = yield prisma_1.prisma.portfolio.delete({
         where: {
-            id: portfolioId
-        }
+            id: portfolioId,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, portfolio, "Portfolio information deleted successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, portfolio, "Portfolio information deleted successfully"));
+}));
+exports.createPortfolio = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, name, about, image_url, x_url, github_url, linkedin_url, facebook_url, } = req.body;
+    // Check if portfolio already exists
+    const portfolio = yield prisma_1.prisma.portfolio.findMany();
+    if (portfolio.length > 0) {
+        return res
+            .status(400)
+            .json(new ApiResponse_1.ApiResponse(400, portfolio[0], "Portfolio Already Available"));
+    }
+    // Validate required fields
+    if (!email ||
+        !name ||
+        !about ||
+        !image_url ||
+        !x_url ||
+        !github_url ||
+        !linkedin_url ||
+        !facebook_url) {
+        throw new ApiError_1.ApiError(400, "All fields are required");
+    }
+    const newPortfolio = yield prisma_1.prisma.portfolio.create({
+        data: {
+            email,
+            name,
+            about,
+            image_url,
+            x_url,
+            github_url,
+            linkedin_url,
+            facebook_url,
+        },
+    });
+    return res
+        .status(201)
+        .json(new ApiResponse_1.ApiResponse(201, newPortfolio, "Portfolio created successfully"));
 }));
 exports.getWorkExperiences = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolio = yield prisma_1.prisma.portfolio.findMany();
-    if (!portfolio.length || !portfolio[0] || !portfolio) {
+    if (portfolio.length < 1) {
         throw new ApiError_1.ApiError(404, "Portfolio not found");
     }
     const workExperiences = yield prisma_1.prisma.workExperience.findMany({
         where: {
-            portfolioId: portfolio[0].id
-        }
+            portfolioId: portfolio[0].id,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, workExperiences, "Work experiences fetched successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, workExperiences, "Work experiences fetched successfully"));
 }));
 exports.updateWorkExperience = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const workExperienceId = req.params.id;
     const workExperience = yield prisma_1.prisma.workExperience.update({
         where: {
-            id: workExperienceId
+            id: workExperienceId,
         },
         data: {
             companyName: req.body.companyName,
             position: req.body.position,
             startDate: req.body.startDate,
-            endDate: req.body.endDate
-        }
+            endDate: req.body.endDate,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, workExperience, "Work experience updated successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, workExperience, "Work experience updated successfully"));
 }));
 exports.deleteWorkExperience = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const workExperienceId = req.params.id;
     const workExperience = yield prisma_1.prisma.workExperience.delete({
         where: {
-            id: workExperienceId
-        }
+            id: workExperienceId,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, workExperience, "Work experience deleted successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, workExperience, "Work experience deleted successfully"));
 }));
 exports.addWorkExperience = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolio = yield prisma_1.prisma.portfolio.findMany();
-    if (!portfolio.length || !portfolio[0] || !portfolio) {
+    if (portfolio.length < 1) {
         throw new ApiError_1.ApiError(404, "Portfolio not found");
     }
     const workExperience = yield prisma_1.prisma.workExperience.create({
@@ -167,74 +228,86 @@ exports.addWorkExperience = (0, asyncHandler_1.asyncHandler)((req, res) => __awa
             position: req.body.position,
             startDate: req.body.startDate,
             endDate: req.body.endDate,
-            portfolioId: portfolio[0].id
-        }
+            portfolioId: portfolio[0].id,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, workExperience, "Work experience added successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, workExperience, "Work experience added successfully"));
 }));
 exports.getSkills = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolio = yield prisma_1.prisma.portfolio.findMany();
-    if (!portfolio.length || !portfolio[0] || !portfolio) {
+    if (portfolio.length < 1) {
         throw new ApiError_1.ApiError(404, "Portfolio not found");
     }
     const skills = yield prisma_1.prisma.skill.findMany({
         where: {
-            portfolioId: portfolio[0].id
-        }
+            portfolioId: portfolio[0].id,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, skills, "Skills fetched successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, skills, "Skills fetched successfully"));
 }));
 exports.addSkills = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolio = yield prisma_1.prisma.portfolio.findMany();
-    if (!portfolio.length || !portfolio[0] || !portfolio) {
+    if (portfolio.length < 1) {
         throw new ApiError_1.ApiError(404, "Portfolio not found");
     }
     const skill = yield prisma_1.prisma.skill.create({
         data: {
             label: req.body.label,
             url: req.body.url,
-            portfolioId: portfolio[0].id
-        }
+            portfolioId: portfolio[0].id,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, skill, "Skill added successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, skill, "Skill added successfully"));
 }));
 exports.updateSkill = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const skillId = req.params.id;
     const skill = yield prisma_1.prisma.skill.update({
         where: {
-            id: skillId
+            id: skillId,
         },
         data: {
             label: req.body.label,
-            url: req.body.url
-        }
+            url: req.body.url,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, skill, "Skill updated successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, skill, "Skill updated successfully"));
 }));
 exports.deleteSkill = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const skillId = req.params.id;
     const skill = yield prisma_1.prisma.skill.delete({
         where: {
-            id: skillId
-        }
+            id: skillId,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, skill, "Skill deleted successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, skill, "Skill deleted successfully"));
 }));
 exports.getProjects = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolio = yield prisma_1.prisma.portfolio.findMany();
-    if (!portfolio.length || !portfolio[0] || !portfolio) {
+    if (portfolio.length < 1) {
         throw new ApiError_1.ApiError(404, "Portfolio not found");
     }
     const projects = yield prisma_1.prisma.project.findMany({
         where: {
-            portfolioId: portfolio[0].id
-        }
+            portfolioId: portfolio[0].id,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, projects, "Projects fetched successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, projects, "Projects fetched successfully"));
 }));
 exports.addProject = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolio = yield prisma_1.prisma.portfolio.findMany();
-    if (!portfolio.length || !portfolio[0] || !portfolio) {
+    if (portfolio.length < 1) {
         throw new ApiError_1.ApiError(404, "Portfolio not found");
     }
     const project = yield prisma_1.prisma.project.create({
@@ -245,16 +318,18 @@ exports.addProject = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(vo
             endDate: req.body.endDate,
             image_url: req.body.image_url,
             web_url: req.body.web_url,
-            portfolioId: portfolio[0].id
-        }
+            portfolioId: portfolio[0].id,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, project, "Project added successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, project, "Project added successfully"));
 }));
 exports.updateProject = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const projectId = req.params.id;
     const project = yield prisma_1.prisma.project.update({
         where: {
-            id: projectId
+            id: projectId,
         },
         data: {
             name: req.body.name,
@@ -262,89 +337,109 @@ exports.updateProject = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter
             startDate: req.body.startDate,
             endDate: req.body.endDate,
             image_url: req.body.image_url,
-            web_url: req.body.web_url
-        }
+            web_url: req.body.web_url,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, project, "Project updated successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, project, "Project updated successfully"));
 }));
 exports.deleteProject = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const projectId = req.params.id;
     const project = yield prisma_1.prisma.project.delete({
         where: {
-            id: projectId
-        }
+            id: projectId,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, project, "Project deleted successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, project, "Project deleted successfully"));
 }));
 exports.getEducations = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolio = yield prisma_1.prisma.portfolio.findMany();
-    if (!portfolio.length || !portfolio[0] || !portfolio) {
+    if (portfolio.length < 1) {
         throw new ApiError_1.ApiError(404, "Portfolio not found");
     }
     const educations = yield prisma_1.prisma.education.findMany({
         where: {
-            portfolioId: portfolio[0].id
-        }
+            portfolioId: portfolio[0].id,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, educations, "Educations fetched successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, educations, "Educations fetched successfully"));
 }));
 exports.addEducation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const portfolio = yield prisma_1.prisma.portfolio.findMany();
-    if (!portfolio.length || !portfolio[0] || !portfolio) {
+    if (portfolio.length < 1) {
         throw new ApiError_1.ApiError(404, "Portfolio not found");
     }
     const education = yield prisma_1.prisma.education.create({
         data: {
-            schoolName: req.body.schoolName,
+            institution: req.body.institution,
             degree: req.body.degree,
             startDate: req.body.startDate,
             endDate: req.body.endDate,
             status: req.body.status,
-            portfolioId: portfolio[0].id
-        }
+            portfolioId: portfolio[0].id,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, education, "Education added successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, education, "Education added successfully"));
 }));
 exports.updateEducation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const educationId = req.params.id;
     const education = yield prisma_1.prisma.education.update({
         where: {
-            id: educationId
+            id: educationId,
         },
         data: {
-            schoolName: req.body.schoolName,
+            institution: req.body.institution,
             degree: req.body.degree,
             startDate: req.body.startDate,
             endDate: req.body.endDate,
-            status: req.body.status
-        }
+            status: req.body.status,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, education, "Education updated successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, education, "Education updated successfully"));
 }));
 exports.deleteEducation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const educationId = req.params.id;
     const education = yield prisma_1.prisma.education.delete({
         where: {
-            id: educationId
-        }
+            id: educationId,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, education, "Education deleted successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, education, "Education deleted successfully"));
 }));
 exports.getNewsletters = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const newsletters = yield prisma_1.prisma.newsletter.findMany();
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, newsletters, "Newsletters fetched successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, newsletters, "Newsletters fetched successfully"));
 }));
 exports.addNewsletter = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const existNewsletter = yield prisma_1.prisma.newsletter.findUnique({ where: {
-            email: req.body.email
-        } });
+    const existNewsletter = yield prisma_1.prisma.newsletter.findUnique({
+        where: {
+            email: req.body.email,
+        },
+    });
     if (existNewsletter) {
-        return res.status(200).json(new ApiResponse_1.ApiResponse(200, existNewsletter, "Email added successfully"));
+        return res
+            .status(200)
+            .json(new ApiResponse_1.ApiResponse(200, existNewsletter, "Email added successfully"));
     }
     const newsletter = yield prisma_1.prisma.newsletter.create({
         data: {
-            email: req.body.email
-        }
+            email: req.body.email,
+        },
     });
-    return res.status(200).json(new ApiResponse_1.ApiResponse(200, newsletter, "Email added successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, newsletter, "Email added successfully"));
 }));

@@ -89,7 +89,9 @@ export default function AccountTab() {
           avatar: accountData.avatar,
         },
         {
-          withCredentials: true,
+          headers:{
+            "Authorization" : `Bearer ${Cookies.get('access_token')}`
+          }
         }
       );
 
@@ -116,7 +118,9 @@ export default function AccountTab() {
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/profile/change-password`,
         passwordData,
         {
-          withCredentials: true,
+          headers:{
+            "Authorization" : `Bearer ${Cookies.get('access_token')}`
+          }
         }
       );
 
@@ -142,13 +146,15 @@ export default function AccountTab() {
       const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/profile`,
         {
-          withCredentials: true,
+          headers:{
+            "Authorization" : `Bearer ${Cookies.get('access_token')}`
+          }
         }
       );
 
       if (response.data.success) {
         toast.success("Account deleted successfully");
-        router.push("/login");
+        router.push("/auth");
       }
     } catch (error) {
       console.error("Error deleting account:", error);

@@ -1,14 +1,67 @@
 import express from "express";
 
+import {
+  addEducation,
+  addProject,
+  addSkills,
+  addWorkExperience,
+  changeCurrentPassword,
+  createPortfolio,
+  deleteEducation,
+  deletePortfolioInformation,
+  deleteProfileInformation,
+  deleteProject,
+  deleteSkill,
+  deleteWorkExperience,
+  getEducations,
+  getPortfolioInformation,
+  getProfileInformation,
+  getProjects,
+  getSkills,
+  getWorkExperiences,
+  updateEducation,
+  updatePortfolioInformation,
+  updateProfileInformation,
+  updateProject,
+  updateSkill,
+  updateWorkExperience,
+} from "../controllers/user.controllers";
 import { verifyJWT } from "../middlewares/verify.middlewares";
-import { changeCurrentPassword, deleteProfileInformation, getProfileInformation, updateProfileInformation } from "../controllers/user.controllers";
 
 export const userRoutes = express.Router();
 
+// profile
+userRoutes.get("/profile", verifyJWT, getProfileInformation);
+userRoutes.put("/profile", verifyJWT, updateProfileInformation);
+userRoutes.delete("/profile", verifyJWT, deleteProfileInformation);
+userRoutes.put("/profile/change-password", verifyJWT, changeCurrentPassword);
 
-userRoutes.get("/profile", verifyJWT, getProfileInformation)
-userRoutes.put("/profile", verifyJWT, updateProfileInformation)
-userRoutes.delete("/profile", verifyJWT, deleteProfileInformation)
-userRoutes.put("/profile/change-password", verifyJWT, changeCurrentPassword)
+// Portfolio
+userRoutes.get("/portfolio", getPortfolioInformation);
+userRoutes.post("/portfolio", verifyJWT, createPortfolio);
+userRoutes.put("/portfolio", verifyJWT, updatePortfolioInformation);
+userRoutes.delete("/portfolio", verifyJWT, deletePortfolioInformation);
 
+// Skills
+userRoutes.get("/skills", getSkills);
+userRoutes.post("/skills", verifyJWT, addSkills);
+userRoutes.put("/skills/:id", verifyJWT, updateSkill);
+userRoutes.delete("/skills/:id", verifyJWT, deleteSkill);
 
+// Education
+userRoutes.get("/education", getEducations);
+userRoutes.post("/education", verifyJWT, addEducation);
+userRoutes.put("/education", verifyJWT, updateEducation);
+userRoutes.delete("/education", verifyJWT, deleteEducation);
+
+// Work Experience
+userRoutes.get("/work-experiences", getWorkExperiences);
+userRoutes.post("/work-experiences", verifyJWT, addWorkExperience);
+userRoutes.put("/work-experiences/:id", verifyJWT, updateWorkExperience);
+userRoutes.delete("/work-experiences/:id", verifyJWT, deleteWorkExperience);
+
+// Projects
+userRoutes.get("/projects", getProjects);
+userRoutes.post("/projects", verifyJWT, addProject);
+userRoutes.put("/projects", verifyJWT, updateProject);
+userRoutes.delete("/projects", verifyJWT, deleteProject);

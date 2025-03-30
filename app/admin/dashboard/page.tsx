@@ -75,11 +75,11 @@ export default function Dashboard(props: DashboardProps) {
         initial={{ x: -300 }}
         animate={{ x: isSidebarOpen ? 0 : -300 }}
         transition={{ duration: 0.3 }}
-        className={`fixed lg:relative w-[280px] h-screen ${
+        className={`fixed top-0 left-0 lg:relative w-[280px] min-h-screen ${
           isDarkMode ? "bg-gray-800/95" : "bg-white/95"
         } backdrop-blur-sm border-r ${
           isDarkMode ? "border-gray-700/50" : "border-gray-200/50"
-        } shadow-lg lg:shadow-none z-30`}
+        } shadow-lg lg:shadow-none z-30 overflow-hidden`}
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
