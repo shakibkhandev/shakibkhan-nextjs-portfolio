@@ -7,17 +7,10 @@ import { useEffect, useState } from "react";
 
 export default function FloatingBottomNavBar() {
   const { isDarkMode, toggleTheme } = useGlobalContext();
-  const [load, setLoad] = useState(false);
 
-  useEffect(() => {
-    if (sessionStorage) {
-      setLoad(true);
-    }
-  }, []);
 
   return (
-    <>
-      {load && (
+    
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -25,7 +18,7 @@ export default function FloatingBottomNavBar() {
             type: "spring",
             stiffness: 300,
             damping: 25,
-            delay: sessionStorage.getItem("isOnBoarding") ? 1 : 3, // Delay until after content appears
+            delay: 1,
           }}
           className={`fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-4 rounded-2xl border 
   backdrop-blur-md  z-50
@@ -340,7 +333,6 @@ export default function FloatingBottomNavBar() {
             </div>
           </nav>
         </motion.div>
-      )}
-    </>
+      
   );
 }

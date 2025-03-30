@@ -1,11 +1,18 @@
+
 import FloatingBottomNavBar from "@/components/FloatingBottomNavBar";
 import { GlobalContextProvider } from "@/context/GlobalContextProvider";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { MantineProvider } from '@mantine/core';
+import '@mantine/core/styles.css';
+import { Toaster } from 'sonner';
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Shakib Khan | Web & Android Developer",
-  description: "I am a web developer and android developer",
+  title: "Shakib Khan - Portfolio",
+  description: "A showcase of my work and skills",
   icons: {
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
@@ -27,11 +34,14 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className={`antialiased`}>
-        <GlobalContextProvider>
-          {children}
-          <FloatingBottomNavBar />
+      <body className={`${inter.className} `}>
+        <MantineProvider defaultColorScheme="dark">
+          <GlobalContextProvider>
+            {children}
+            <FloatingBottomNavBar />
+            <Toaster richColors position="top-center" />
         </GlobalContextProvider>
+          </MantineProvider>
       </body>
     </html>
   );

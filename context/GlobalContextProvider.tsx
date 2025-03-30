@@ -1,4 +1,5 @@
 "use client";
+import { MantineProvider, useMantineColorScheme } from '@mantine/core';
 import React, { useEffect, useState } from "react";
 
 interface GlobalProviderProps {
@@ -15,7 +16,6 @@ const GlobalContext = React.createContext<GlobalContextProps | null>(null);
 export const useGlobalContext = () => {
   const state = React.useContext(GlobalContext);
   if (!state) throw new Error("State Is Undefined");
-
   return state;
 };
 
@@ -23,54 +23,50 @@ export const GlobalContextProvider: React.FC<GlobalProviderProps> = ({
   children,
 }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { setColorScheme, colorScheme } = useMantineColorScheme();
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("dark-theme");
+    if (savedTheme) {
+      const isDark = savedTheme === "true";
+      setIsDarkMode(isDark);
+      setColorScheme(isDark ? "dark" : "light");
+    }
+  }, [setColorScheme]);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     localStorage.setItem("dark-theme", (!isDarkMode).toString());
-     // Create ripple effect
-     const ripple = document.createElement("div");
-     ripple.className = "theme-ripple";
-     document.body.appendChild(ripple);
- 
-     // Set ripple position to theme toggle button position
-     const button = document.querySelector('[aria-label="Toggle theme"]');
-     const rect = button?.getBoundingClientRect();
-     ripple.style.setProperty(
-       "--ripple-color",
-       !isDarkMode ? "#000" : "#fff"
-     );
-     if (rect) {
-       ripple.style.setProperty(
-         "--ripple-top",
-         `${rect.top + rect.height / 2}px`
-       );
-       ripple.style.setProperty(
-         "--ripple-left",
-         `${rect.left + rect.width / 2}px`
-       );
-     }
- 
-     // Add transition class
-     document.documentElement.classList.add("theme-transition");
- 
-     // Cleanup
-     setTimeout(() => {
-       document.documentElement.classList.remove("theme-transition");
-       document.body.removeChild(ripple);
-     }, 1000);
-  };
+    setColorScheme(!isDarkMode ? "dark" : "light");
+    
+    // Create ripple effect
+    const ripple = document.createElement("div");
+    ripple.className = "theme-ripple";
+    document.body.appendChild(ripple);
 
-  useEffect(() => {
-    const theme = localStorage.getItem("dark-theme");
-    if (theme === "true") {
-      setIsDarkMode(true);
-    } else {
-      setIsDarkMode(false);
+    // Set ripple position to theme toggle button position
+    const button = document.querySelector('[aria-label="Toggle theme"]');
+    const rect = button?.getBoundingClientRect();
+    ripple.style.setProperty(
+      "--ripple-color",
+      !isDarkMode ? "#000" : "#fff"
+    );
+    if (rect) {
+      ripple.style.setProperty(
+        "--ripple-top",
+        `${rect.top + rect.height / 2}px`
+      );
+      ripple.style.setProperty(
+        "--ripple-left",
+        `${rect.left + rect.width / 2}px`
+      );
     }
 
-  }, []);
-
-
+    // Remove ripple after animation
+    setTimeout(() => {
+      ripple.remove();
+    }, 1000);
+  };
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -115,13 +111,11 @@ export const GlobalContextProvider: React.FC<GlobalProviderProps> = ({
     };
   }, []);
 
-
-
-
-
   return (
-    <GlobalContext.Provider value={{ isDarkMode, toggleTheme }}>
-      {children}
-    </GlobalContext.Provider>
+
+      <GlobalContext.Provider value={{ isDarkMode, toggleTheme }}>
+        {children}
+      </GlobalContext.Provider>
+
   );
 };
