@@ -11,6 +11,7 @@ import { Editor } from '@tiptap/react';
 interface BlogModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isDarkMode: boolean;
 }
 
 const tagOptions = [
@@ -286,7 +287,8 @@ export default function BlogModal({ isOpen, onClose }: BlogModalProps) {
           setIsTagModalOpen(false);
         }}
         selectedTags={tags}
-        tagOptions={tagOptions}
+        options={tagOptions}
+        isDarkMode={isDarkMode}
       />
     </Transition>
   );

@@ -14,7 +14,7 @@ const ProfileContent = ({ portfolio, isDarkMode, handleProfileEdit } : any) => {
     facebook_url: portfolio.facebook_url
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };

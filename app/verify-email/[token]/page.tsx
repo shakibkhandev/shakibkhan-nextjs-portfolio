@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiOutlineMail, HiOutlineCheck } from "react-icons/hi";
 
-export default function VerifyEmail({ params }: { params: { token: string } }) {
+export default function VerifyEmail() {
   const router = useRouter();
+  const {token} = useParams()
   const { isDarkMode } = useGlobalContext();
   const [isVerifying, setIsVerifying] = useState(true);
   const [verificationSuccess, setVerificationSuccess] = useState(false);
@@ -18,7 +19,7 @@ export default function VerifyEmail({ params }: { params: { token: string } }) {
     const verifyEmail = async () => {
       try {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify-email/${params.token}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify-email/${token}`
         );
 
         if (response.data.success) {
@@ -41,7 +42,7 @@ export default function VerifyEmail({ params }: { params: { token: string } }) {
     };
 
     verifyEmail();
-  }, [params.token, router]);
+  }, [token, router]);
 
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 ${isDarkMode ? "bg-gray-900" : "bg-gray-100"}`}>

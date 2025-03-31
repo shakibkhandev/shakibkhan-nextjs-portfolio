@@ -419,8 +419,8 @@ export default function PortfolioTab() {
           <ItemList
             items={portfolio.projects}
             type="projects"
-            renderItem={(project: Project) => (
-              <ProjectItem project={project} isDarkMode={isDarkMode} />
+            renderItem={(item) => (
+              <ProjectItem project={item as Project} isDarkMode={isDarkMode} />
             )}
             onDelete={(id: string) =>
               setModalState({
@@ -453,7 +453,7 @@ export default function PortfolioTab() {
           <ItemList
             items={portfolio.education}
             type="education"
-            renderItem={(edu: Education) => (
+            renderItem={(edu) => (
               <EducationItem education={edu} isDarkMode={isDarkMode} />
             )}
             onDelete={(id: string) =>
@@ -491,8 +491,8 @@ export default function PortfolioTab() {
           <ItemList
             items={portfolio.workExperience}
             type="workExperience"
-            renderItem={(work: WorkExperience) => (
-              <WorkExperienceItem work={work} isDarkMode={isDarkMode} />
+            renderItem={(work) => (
+              <WorkExperienceItem work={work as WorkExperience} isDarkMode={isDarkMode} />
             )}
             onDelete={(id: string) =>
               setModalState({
@@ -529,8 +529,8 @@ export default function PortfolioTab() {
           <ItemList
             items={portfolio.skills}
             type="skills"
-            renderItem={(skill: Skill) => (
-              <SkillItem skill={skill} isDarkMode={isDarkMode} />
+            renderItem={(skill) => (
+              <SkillItem skill={skill as Skill} isDarkMode={isDarkMode} />
             )}
             onDelete={(id: string) =>
               setModalState({
