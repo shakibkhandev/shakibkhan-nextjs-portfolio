@@ -39,7 +39,6 @@ html {
 
 * {
   -webkit-tap-highlight-color: transparent;
-  /* user-select: none; */
 }
 
 @keyframes wave {
