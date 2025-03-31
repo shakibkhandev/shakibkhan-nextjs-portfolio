@@ -109,14 +109,19 @@ exports.getPortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res) =>
         .json(new ApiResponse_1.ApiResponse(200, portfolio[0], "Portfolio information fetched successfully"));
 }));
 exports.updatePortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const portfolioId = req.params.id;
+    const existPortfolio = yield prisma_1.prisma.portfolio.findMany();
+    if (existPortfolio.length < 1) {
+        throw new ApiError_1.ApiError(404, "Portfolio not found");
+    }
     const portfolio = yield prisma_1.prisma.portfolio.update({
         where: {
-            id: portfolioId,
+            id: existPortfolio[0].id,
         },
         data: {
             name: req.body.name,
+            email: req.body.email,
             about: req.body.about,
+            bio: req.body.bio,
             image_url: req.body.image_url,
             x_url: req.body.x_url,
             github_url: req.body.github_url,
@@ -129,12 +134,7 @@ exports.updatePortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res)
         .json(new ApiResponse_1.ApiResponse(200, portfolio, "Portfolio information updated successfully"));
 }));
 exports.deletePortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const portfolioId = req.params.id;
-    const portfolio = yield prisma_1.prisma.portfolio.delete({
-        where: {
-            id: portfolioId,
-        },
-    });
+    const portfolio = yield prisma_1.prisma.portfolio.deleteMany();
     return res
         .status(200)
         .json(new ApiResponse_1.ApiResponse(200, portfolio, "Portfolio information deleted successfully"));

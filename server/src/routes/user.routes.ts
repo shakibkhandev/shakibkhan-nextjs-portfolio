@@ -51,8 +51,8 @@ userRoutes.delete("/skills/:id", verifyJWT, deleteSkill);
 // Education
 userRoutes.get("/education", getEducations);
 userRoutes.post("/education", verifyJWT, addEducation);
-userRoutes.put("/education", verifyJWT, updateEducation);
-userRoutes.delete("/education", verifyJWT, deleteEducation);
+userRoutes.put("/education/:id", verifyJWT, updateEducation);
+userRoutes.delete("/education/:id", verifyJWT, deleteEducation);
 
 // Work Experience
 userRoutes.get("/work-experiences", getWorkExperiences);
@@ -63,5 +63,5 @@ userRoutes.delete("/work-experiences/:id", verifyJWT, deleteWorkExperience);
 // Projects
 userRoutes.get("/projects", getProjects);
 userRoutes.post("/projects", verifyJWT, addProject);
-userRoutes.put("/projects", verifyJWT, updateProject);
-userRoutes.delete("/projects", verifyJWT, deleteProject);
+userRoutes.put("/projects/:id", verifyJWT, updateProject);
+userRoutes.delete("/projects/:id", verifyJWT, deleteProject);

@@ -129,15 +129,19 @@ export const getPortfolioInformation = asyncHandler(async (req: any, res) => {
 
 export const updatePortfolioInformation = asyncHandler(
   async (req: any, res) => {
-    const portfolioId = req.params.id;
-
+    const existPortfolio = await prisma.portfolio.findMany();
+    if (existPortfolio.length < 1) {
+      throw new ApiError(404, "Portfolio not found");
+    }
     const portfolio = await prisma.portfolio.update({
       where: {
-        id: portfolioId,
+        id: existPortfolio[0].id,
       },
       data: {
         name: req.body.name,
+        email: req.body.email,
         about: req.body.about,
+        bio: req.body.bio,
         image_url: req.body.image_url,
         x_url: req.body.x_url,
         github_url: req.body.github_url,
@@ -160,14 +164,7 @@ export const updatePortfolioInformation = asyncHandler(
 
 export const deletePortfolioInformation = asyncHandler(
   async (req: any, res) => {
-    const portfolioId = req.params.id;
-
-    const portfolio = await prisma.portfolio.delete({
-      where: {
-        id: portfolioId,
-      },
-    });
-
+    const portfolio = await prisma.portfolio.deleteMany();
     return res
       .status(200)
       .json(

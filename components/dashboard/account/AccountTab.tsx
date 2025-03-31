@@ -167,7 +167,7 @@ export default function AccountTab() {
 
   const handleLogout = () => {
     Cookies.remove("access_token");
-    router.push("/login");
+    router.push("/auth");
   };
 
   if (isLoading) {

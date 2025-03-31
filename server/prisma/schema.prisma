@@ -48,6 +48,7 @@ model Portfolio {
   facebook_url String
   name String
   about String
+  bio String @default("Nothing To Say")
   image_url String
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt

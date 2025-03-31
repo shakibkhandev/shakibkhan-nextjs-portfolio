@@ -26,8 +26,8 @@ exports.userRoutes.delete("/skills/:id", verify_middlewares_1.verifyJWT, user_co
 // Education
 exports.userRoutes.get("/education", user_controllers_1.getEducations);
 exports.userRoutes.post("/education", verify_middlewares_1.verifyJWT, user_controllers_1.addEducation);
-exports.userRoutes.put("/education", verify_middlewares_1.verifyJWT, user_controllers_1.updateEducation);
-exports.userRoutes.delete("/education", verify_middlewares_1.verifyJWT, user_controllers_1.deleteEducation);
+exports.userRoutes.put("/education/:id", verify_middlewares_1.verifyJWT, user_controllers_1.updateEducation);
+exports.userRoutes.delete("/education/:id", verify_middlewares_1.verifyJWT, user_controllers_1.deleteEducation);
 // Work Experience
 exports.userRoutes.get("/work-experiences", user_controllers_1.getWorkExperiences);
 exports.userRoutes.post("/work-experiences", verify_middlewares_1.verifyJWT, user_controllers_1.addWorkExperience);
@@ -36,5 +36,5 @@ exports.userRoutes.delete("/work-experiences/:id", verify_middlewares_1.verifyJW
 // Projects
 exports.userRoutes.get("/projects", user_controllers_1.getProjects);
 exports.userRoutes.post("/projects", verify_middlewares_1.verifyJWT, user_controllers_1.addProject);
-exports.userRoutes.put("/projects", verify_middlewares_1.verifyJWT, user_controllers_1.updateProject);
-exports.userRoutes.delete("/projects", verify_middlewares_1.verifyJWT, user_controllers_1.deleteProject);
+exports.userRoutes.put("/projects/:id", verify_middlewares_1.verifyJWT, user_controllers_1.updateProject);
+exports.userRoutes.delete("/projects/:id", verify_middlewares_1.verifyJWT, user_controllers_1.deleteProject);
