@@ -53,4 +53,4 @@ app.use("/api/v1", routes);
 
 app.use(errorHandler);
 
-export { app };
+export default app;
