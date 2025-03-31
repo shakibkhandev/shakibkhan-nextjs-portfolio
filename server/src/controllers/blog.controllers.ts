@@ -143,7 +143,7 @@ export const updateBlog = asyncHandler(async(req :any,res :any)=>{
         });
     }
 
-    const existingTagLabels = blog.tags.map(tag => tag.label);
+    const existingTagLabels = blog.tags.map((tag: any) => tag.label);
     const newTagsToAdd = tags.filter((tag: string) => !existingTagLabels.includes(tag));
 
     const updatedBlog = await prisma.blog.update({
