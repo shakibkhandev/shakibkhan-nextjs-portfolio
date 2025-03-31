@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   addEducation,
+  addNewsletter,
   addProject,
   addSkills,
   addWorkExperience,
@@ -14,6 +15,7 @@ import {
   deleteSkill,
   deleteWorkExperience,
   getEducations,
+  getNewsletters,
   getPortfolioInformation,
   getProfileInformation,
   getProjects,
@@ -65,3 +67,7 @@ userRoutes.get("/projects", getProjects);
 userRoutes.post("/projects", verifyJWT, addProject);
 userRoutes.put("/projects/:id", verifyJWT, updateProject);
 userRoutes.delete("/projects/:id", verifyJWT, deleteProject);
+
+// Newsletter
+userRoutes.get("/newsletter", verifyJWT, getNewsletters);
+userRoutes.post("/newsletter", addNewsletter);

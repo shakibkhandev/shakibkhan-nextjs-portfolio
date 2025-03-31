@@ -72,7 +72,7 @@ model Education {
 
 model Skill {
   id         String   @id @default(cuid())
-  label     String
+  label     String @unique
   url String?
   portfolioId String
   portfolio   Portfolio @relation(fields: [portfolioId], references: [id])

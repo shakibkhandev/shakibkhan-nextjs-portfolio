@@ -24,6 +24,8 @@ export default function DeleteAccountModal({
 }: DeleteAccountModalProps) {
   const { isDarkMode } = useGlobalContext();
 
+  const hasChanges = confirmText !== "";
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
@@ -108,35 +110,55 @@ export default function DeleteAccountModal({
                 </div>
 
                 <div className="mt-6 flex justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    disabled={isDeleting}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      isDarkMode
-                        ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
-                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    } ${isDeleting ? "opacity-50 cursor-not-allowed" : ""}`}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    disabled={isDeleting || confirmText !== "DELETE MY ACCOUNT"}
-                    onClick={onConfirm}
-                    className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      isDarkMode
-                        ? "bg-red-600 hover:bg-red-700 text-white"
-                        : "bg-red-500 hover:bg-red-600 text-white"
-                    } ${
-                      isDeleting || confirmText !== "DELETE MY ACCOUNT"
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                  >
-                    <FiTrash2 className="h-4 w-4" />
-                    {isDeleting ? "Deleting..." : "Delete Account"}
-                  </button>
+                  {hasChanges ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onConfirmTextChange("");
+                          onClose();
+                        }}
+                        disabled={isDeleting}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+                          isDarkMode
+                            ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
+                            : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        } ${isDeleting ? "opacity-50 cursor-not-allowed" : ""}`}
+                      >
+                        Discard
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isDeleting || confirmText !== "DELETE MY ACCOUNT"}
+                        onClick={onConfirm}
+                        className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+                          isDarkMode
+                            ? "bg-red-600 hover:bg-red-700 text-white"
+                            : "bg-red-500 hover:bg-red-600 text-white"
+                        } ${
+                          isDeleting || confirmText !== "DELETE MY ACCOUNT"
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
+                      >
+                        <FiTrash2 className="h-4 w-4" />
+                        {isDeleting ? "Deleting..." : "Delete Account"}
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      disabled={isDeleting}
+                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+                        isDarkMode
+                          ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      } ${isDeleting ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </div>
               </Dialog.Panel>
             </Transition.Child>

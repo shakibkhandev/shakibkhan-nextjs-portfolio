@@ -107,7 +107,11 @@ export const getPortfolioInformation = asyncHandler(async (req: any, res) => {
     include: {
       education: true,
       workExperience: true,
-      projects: true,
+      projects: {
+        include: {
+          skills: true,
+        },
+      },
       skills: true,
     },
   });
@@ -403,6 +407,9 @@ export const getProjects = asyncHandler(async (req: any, res) => {
     where: {
       portfolioId: portfolio[0].id,
     },
+    include:{
+      skills:true
+    }
   });
 
   return res
@@ -426,7 +433,13 @@ export const addProject = asyncHandler(async (req: any, res) => {
       image_url: req.body.image_url,
       web_url: req.body.web_url,
       portfolioId: portfolio[0].id,
+      skills: {
+        connect: req.body.skills.map((item: any) => ({ id: item }))
+      }
     },
+    include:{
+      skills:true
+    }
   });
 
   return res
@@ -557,9 +570,15 @@ export const getNewsletters = asyncHandler(async (req: any, res) => {
 });
 
 export const addNewsletter = asyncHandler(async (req: any, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    throw new ApiError(400, "Email is required");
+  }
+
   const existNewsletter = await prisma.newsletter.findUnique({
     where: {
-      email: req.body.email,
+      email: email,
     },
   });
 
@@ -570,7 +589,7 @@ export const addNewsletter = asyncHandler(async (req: any, res) => {
   }
   const newsletter = await prisma.newsletter.create({
     data: {
-      email: req.body.email,
+      email: email,
     },
   });
 

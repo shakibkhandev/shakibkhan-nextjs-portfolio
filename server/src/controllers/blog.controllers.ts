@@ -105,6 +105,9 @@ export const getBlogById = asyncHandler(async (req: any, res: any) => {
     const blog = await prisma.blog.findUnique({
         where: {
             id
+        },
+        include:{
+            tags: true
         }
     });
 

@@ -101,6 +101,9 @@ exports.getBlogById = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(v
     const blog = yield prisma_1.prisma.blog.findUnique({
         where: {
             id
+        },
+        include: {
+            tags: true
         }
     });
     if (!blog) {
@@ -132,7 +135,7 @@ exports.updateBlog = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(vo
             message: 'Blog not found'
         });
     }
-    const existingTagLabels = blog.tags.map(tag => tag.label);
+    const existingTagLabels = blog.tags.map((tag) => tag.label);
     const newTagsToAdd = tags.filter((tag) => !existingTagLabels.includes(tag));
     const updatedBlog = yield prisma_1.prisma.blog.update({
         where: {

@@ -97,7 +97,11 @@ exports.getPortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res) =>
         include: {
             education: true,
             workExperience: true,
-            projects: true,
+            projects: {
+                include: {
+                    skills: true,
+                },
+            },
             skills: true,
         },
     });
@@ -300,6 +304,9 @@ exports.getProjects = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(v
         where: {
             portfolioId: portfolio[0].id,
         },
+        include: {
+            skills: true
+        }
     });
     return res
         .status(200)
@@ -319,7 +326,13 @@ exports.addProject = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(vo
             image_url: req.body.image_url,
             web_url: req.body.web_url,
             portfolioId: portfolio[0].id,
+            skills: {
+                connect: req.body.skills.map((item) => ({ id: item }))
+            }
         },
+        include: {
+            skills: true
+        }
     });
     return res
         .status(200)
@@ -424,9 +437,13 @@ exports.getNewsletters = (0, asyncHandler_1.asyncHandler)((req, res) => __awaite
         .json(new ApiResponse_1.ApiResponse(200, newsletters, "Newsletters fetched successfully"));
 }));
 exports.addNewsletter = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    if (!email) {
+        throw new ApiError_1.ApiError(400, "Email is required");
+    }
     const existNewsletter = yield prisma_1.prisma.newsletter.findUnique({
         where: {
-            email: req.body.email,
+            email: email,
         },
     });
     if (existNewsletter) {
@@ -436,7 +453,7 @@ exports.addNewsletter = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter
     }
     const newsletter = yield prisma_1.prisma.newsletter.create({
         data: {
-            email: req.body.email,
+            email: email,
         },
     });
     return res

@@ -193,269 +193,280 @@ export default function AccountTab() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      {/* Profile Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className={`p-8 rounded-2xl ${
-          isDarkMode ? "bg-gray-800/50 backdrop-blur-sm" : "bg-white/50 backdrop-blur-sm"
-        } shadow-lg border ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}
-      >
-        <h2 className={`text-xl font-semibold mb-6 ${
-          isDarkMode ? "text-white" : "text-gray-900"
-        }`}>
-          Profile Information
-        </h2>
-        <div className="space-y-6">
-          {/* Avatar */}
-          <div className="flex flex-col items-center space-y-4">
-            <div className="relative w-32 h-32">
-              <Image
-                src={accountData.avatar || "/placeholder-avatar.png"}
-                alt="Profile"
-                fill
-                className="rounded-full object-cover"
-              />
-            </div>
-            <CldUploadWidget
-              uploadPreset="profile_uploads"
-              onSuccess={(result: any) => {
-                if (result.info && result.info.secure_url) {
-                  setAccountData({
-                    ...accountData,
-                    avatar: result.info.secure_url,
-                  });
-                }
-              }}
-            >
-              {({ open }) => (
-                <button
-                  onClick={() => open()}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    isDarkMode
-                      ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                  }`}
+    <div className="min-h-screen w-full p-4 md:p-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column - Profile and Password */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Profile Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className={`p-6 md:p-8 rounded-2xl ${
+              isDarkMode ? "bg-gray-800/50 backdrop-blur-sm" : "bg-white/50 backdrop-blur-sm"
+            } shadow-lg border ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}
+          >
+            <h2 className={`text-2xl font-bold mb-8 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}>
+              Profile Information
+            </h2>
+            <div className="space-y-8">
+              {/* Avatar */}
+              <div className="flex flex-col items-center space-y-4">
+                <div className="relative w-40 h-40 group cursor-pointer">
+                  <Image
+                    src={accountData.avatar || "/placeholder-avatar.png"}
+                    alt="Profile"
+                    fill
+                    className="rounded-full object-cover ring-4 ring-offset-4 ring-blue-500"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <FiImage className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <CldUploadWidget
+                  uploadPreset="profile_uploads"
+                  onSuccess={(result: any) => {
+                    if (result.info && result.info.secure_url) {
+                      setAccountData({
+                        ...accountData,
+                        avatar: result.info.secure_url,
+                      });
+                    }
+                  }}
                 >
-                  <FiImage className="w-4 h-4" />
-                  Change Photo
+                  {({ open }) => (
+                    <button
+                      onClick={() => open()}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all transform hover:scale-105 cursor-pointer ${
+                        isDarkMode
+                          ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      <FiImage className="w-5 h-5" />
+                      Change Photo
+                    </button>
+                  )}
+                </CldUploadWidget>
+              </div>
+
+              {/* Name */}
+              <div className="space-y-2">
+                <label className={`block text-sm font-medium cursor-text ${
+                  isDarkMode ? "text-gray-300" : "text-gray-700"
+                }`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <FiUser className="w-5 h-5" />
+                    Name
+                  </div>
+                  <input
+                    type="text"
+                    value={accountData.name}
+                    onChange={(e) => setAccountData({ ...accountData, name: e.target.value })}
+                    className={`w-full px-4 py-3 rounded-xl border transition-all cursor-text ${
+                      isDarkMode
+                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    }`}
+                  />
+                </label>
+              </div>
+
+              {/* Email */}
+              <div className="space-y-2">
+                <label className={`block text-sm font-medium cursor-text ${
+                  isDarkMode ? "text-gray-300" : "text-gray-700"
+                }`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <FiMail className="w-5 h-5" />
+                    Email
+                  </div>
+                  <input
+                    type="email"
+                    value={accountData.email}
+                    onChange={(e) => setAccountData({ ...accountData, email: e.target.value })}
+                    className={`w-full px-4 py-3 rounded-xl border transition-all cursor-text ${
+                      isDarkMode
+                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    }`}
+                  />
+                </label>
+              </div>
+
+              {/* Save Button */}
+              <div className="flex justify-end pt-4">
+                <button
+                  onClick={handleProfileUpdate}
+                  disabled={isSaving}
+                  className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all transform hover:scale-105 cursor-pointer ${
+                    isDarkMode
+                      ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-blue-500 hover:bg-blue-600 text-white"
+                  } ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  <FiSave className="w-5 h-5" />
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </button>
-              )}
-            </CldUploadWidget>
-          </div>
-
-          {/* Name */}
-          <div className="space-y-2">
-            <label className={`block text-sm font-medium ${
-              isDarkMode ? "text-gray-300" : "text-gray-700"
-            }`}>
-              <div className="flex items-center gap-2 mb-1">
-                <FiUser className="w-4 h-4" />
-                Name
               </div>
-              <input
-                type="text"
-                value={accountData.name}
-                onChange={(e) => setAccountData({ ...accountData, name: e.target.value })}
-                className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                  isDarkMode
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                }`}
-              />
-            </label>
-          </div>
+            </div>
+          </motion.div>
 
-          {/* Email */}
-          <div className="space-y-2">
-            <label className={`block text-sm font-medium ${
-              isDarkMode ? "text-gray-300" : "text-gray-700"
-            }`}>
-              <div className="flex items-center gap-2 mb-1">
-                <FiMail className="w-4 h-4" />
-                Email
-              </div>
-              <input
-                type="email"
-                value={accountData.email}
-                onChange={(e) => setAccountData({ ...accountData, email: e.target.value })}
-                className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                  isDarkMode
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                }`}
-              />
-            </label>
-          </div>
-
-          {/* Save Button */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleProfileUpdate}
-              disabled={isSaving}
-              className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
-                isDarkMode
-                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                  : "bg-blue-500 hover:bg-blue-600 text-white"
-              } ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+          {/* Password Section */}
+          {accountData.provider === "credentials" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className={`p-6 md:p-8 rounded-2xl ${
+                isDarkMode ? "bg-gray-800/50 backdrop-blur-sm" : "bg-white/50 backdrop-blur-sm"
+              } shadow-lg border ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}
             >
-              <FiSave className="w-4 h-4" />
-              {isSaving ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
+              <h2 className={`text-2xl font-bold mb-8 ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}>
+                Change Password
+              </h2>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className={`block text-sm font-medium cursor-text ${
+                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                  }`}>
+                    Current Password
+                    <input
+                      type="password"
+                      value={passwordData.oldPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+                      className={`w-full mt-2 px-4 py-3 rounded-xl border transition-all cursor-text ${
+                        isDarkMode
+                          ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                          : "bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      }`}
+                    />
+                  </label>
+                </div>
+                <div className="space-y-2">
+                  <label className={`block text-sm font-medium cursor-text ${
+                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                  }`}>
+                    New Password
+                    <input
+                      type="password"
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                      className={`w-full mt-2 px-4 py-3 rounded-xl border transition-all cursor-text ${
+                        isDarkMode
+                          ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                          : "bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      }`}
+                    />
+                  </label>
+                </div>
+                <div className="space-y-2">
+                  <label className={`block text-sm font-medium cursor-text ${
+                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                  }`}>
+                    Confirm New Password
+                    <input
+                      type="password"
+                      value={passwordData.confirmNewPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, confirmNewPassword: e.target.value })}
+                      className={`w-full mt-2 px-4 py-3 rounded-xl border transition-all cursor-text ${
+                        isDarkMode
+                          ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                          : "bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      }`}
+                    />
+                  </label>
+                </div>
+                <div className="flex justify-end pt-4">
+                  <button
+                    onClick={handlePasswordChange}
+                    disabled={isSaving}
+                    className={`flex items-center gap-2 px-8 py-3 rounded-full transition-all transform hover:scale-105 cursor-pointer ${
+                      isDarkMode
+                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                        : "bg-blue-500 hover:bg-blue-600 text-white"
+                    } ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    <FiLock className="w-5 h-5" />
+                    {isSaving ? "Updating..." : "Update Password"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
-      </motion.div>
 
-      {/* Password Section */}
-      {accountData.provider === "credentials" && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className={`p-8 rounded-2xl ${
-            isDarkMode ? "bg-gray-800/50 backdrop-blur-sm" : "bg-white/50 backdrop-blur-sm"
-          } shadow-lg border ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}
-        >
-          <h2 className={`text-xl font-semibold mb-6 ${
-            isDarkMode ? "text-white" : "text-gray-900"
-          }`}>
-            Change Password
-          </h2>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className={`block text-sm font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-700"
-              }`}>
-                Current Password
-                <input
-                  type="password"
-                  value={passwordData.oldPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
-                  className={`w-full mt-1 px-4 py-2 rounded-lg border transition-colors ${
-                    isDarkMode
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  }`}
-                />
-              </label>
-            </div>
-            <div className="space-y-2">
-              <label className={`block text-sm font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-700"
-              }`}>
-                New Password
-                <input
-                  type="password"
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                  className={`w-full mt-1 px-4 py-2 rounded-lg border transition-colors ${
-                    isDarkMode
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  }`}
-                />
-              </label>
-            </div>
-            <div className="space-y-2">
-              <label className={`block text-sm font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-700"
-              }`}>
-                Confirm New Password
-                <input
-                  type="password"
-                  value={passwordData.confirmNewPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, confirmNewPassword: e.target.value })}
-                  className={`w-full mt-1 px-4 py-2 rounded-lg border transition-colors ${
-                    isDarkMode
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  }`}
-                />
-              </label>
-            </div>
-            <div className="flex justify-end">
+        {/* Right Column - Delete Account and Logout */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Delete Account Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className={`p-6 md:p-8 rounded-2xl ${
+              isDarkMode ? "bg-gray-800/50 backdrop-blur-sm" : "bg-white/50 backdrop-blur-sm"
+            } shadow-lg border ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}
+          >
+            <h2 className={`text-xl font-bold mb-6 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}>
+              Delete Account
+            </h2>
+            <div className="space-y-4">
+              <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                Once you delete your account, there is no going back. Please be certain.
+              </p>
               <button
-                onClick={handlePasswordChange}
-                disabled={isSaving}
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
+                onClick={() => setShowDeleteConfirm(true)}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-full transition-all transform hover:scale-105 w-full justify-center cursor-pointer ${
                   isDarkMode
-                    ? "bg-blue-600 hover:bg-blue-700 text-white"
-                    : "bg-blue-500 hover:bg-blue-600 text-white"
-                } ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+                    ? "bg-red-600 hover:bg-red-700 text-white"
+                    : "bg-red-500 hover:bg-red-600 text-white"
+                }`}
               >
-                <FiLock className="w-4 h-4" />
-                {isSaving ? "Updating..." : "Update Password"}
+                <FiTrash2 className="w-5 h-5" />
+                Delete Account
               </button>
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
 
-      {/* Delete Account Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className={`p-8 rounded-2xl ${
-          isDarkMode ? "bg-gray-800/50 backdrop-blur-sm" : "bg-white/50 backdrop-blur-sm"
-        } shadow-lg border ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}
-      >
-        <h2 className={`text-xl font-semibold mb-6 ${
-          isDarkMode ? "text-white" : "text-gray-900"
-        }`}>
-          Delete Account
-        </h2>
-        <div className="space-y-4">
-          <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-            Once you delete your account, there is no going back. Please be certain.
-          </p>
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-colors ${
-              isDarkMode
-                ? "bg-red-600 hover:bg-red-700 text-white"
-                : "bg-red-500 hover:bg-red-600 text-white"
-            }`}
+          {/* Logout Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className={`p-6 md:p-8 rounded-2xl ${
+              isDarkMode ? "bg-gray-800/50 backdrop-blur-sm" : "bg-white/50 backdrop-blur-sm"
+            } shadow-lg border ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}
           >
-            <FiTrash2 className="w-4 h-4" />
-            Delete Account
-          </button>
+            <h2 className={`text-xl font-bold mb-6 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}>
+              Session
+            </h2>
+            <div className="space-y-4">
+              <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                Click the button below to safely log out of your account.
+              </p>
+              <button
+                onClick={() => setShowLogoutModal(true)}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-full transition-all transform hover:scale-105 w-full justify-center cursor-pointer ${
+                  isDarkMode
+                    ? "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
+                    : "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
+                }`}
+              >
+                <FiLogOut className="w-5 h-5" />
+                Logout
+              </button>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-
-      {/* Logout Button */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className={`p-8 rounded-2xl ${
-          isDarkMode ? "bg-gray-800/50 backdrop-blur-sm" : "bg-white/50 backdrop-blur-sm"
-        } shadow-lg border ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}
-      >
-        <h2 className={`text-xl font-semibold mb-6 ${
-          isDarkMode ? "text-white" : "text-gray-900"
-        }`}>
-          Session
-        </h2>
-        <div className="space-y-4">
-          <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-            Click the button below to safely log out of your account.
-          </p>
-          <button
-            onClick={() => setShowLogoutModal(true)}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all transform hover:scale-105 ${
-              isDarkMode
-                ? "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
-                : "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
-            }`}
-          >
-            <FiLogOut className="w-4 h-4" />
-            Logout
-          </button>
-        </div>
-      </motion.div>
+      </div>
 
       {/* Delete Account Modal */}
       <DeleteAccountModal

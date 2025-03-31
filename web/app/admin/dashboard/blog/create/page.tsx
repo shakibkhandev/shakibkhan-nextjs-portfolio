@@ -130,13 +130,13 @@ export default function CreateBlogPage() {
   };
 
   return (
-    <div className={`h-screen w-full overflow-x-hidden ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <div className={`w-full h-full `}>
-        <div className="mx-auto px-4 py-8">
+    <div className={`min-h-screen w-full ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      <div className="h-full">
+        <div className="p-6 lg:p-8">
           {/* Header */}
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-              <h1 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              <h1 className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 Create New Blog Post
               </h1>
               <p className={`mt-2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -145,11 +145,11 @@ export default function CreateBlogPage() {
             </div>
             <button
               onClick={() => router.push('/admin/dashboard')}
-              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+              className={`px-6 py-2.5 rounded-lg flex items-center gap-2 ${
                 isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
-              } border border-gray-300 transition-colors`}
+              } border border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md`}
             >
-              <X size={16} />
+              <X size={18} />
               Cancel
             </button>
           </div>
@@ -159,8 +159,8 @@ export default function CreateBlogPage() {
               {/* Left Column - Main Content */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Title Input */}
-                <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                  <label htmlFor="title" className="block text-sm font-medium mb-2">
+                <div className={`p-8 rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm hover:shadow-md transition-shadow duration-200`}>
+                  <label htmlFor="title" className="block text-sm font-medium mb-3">
                     Title
                   </label>
                   <input
@@ -168,17 +168,17 @@ export default function CreateBlogPage() {
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className={`w-full px-4 py-3 rounded-lg border text-lg font-medium ${
+                    className={`w-full px-5 py-4 rounded-xl border text-xl font-medium ${
                       isDarkMode
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500'
+                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
                     placeholder="Enter a descriptive title"
                   />
                 </div>
 
                 {/* Content Editor */}
-                <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+                <div className={`p-8 rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm hover:shadow-md transition-shadow duration-200`}>
                   <label className="block text-sm font-medium mb-4">Content</label>
                   <BlogEditor onChange={handleEditorChange} isDarkMode={isDarkMode} />
                 </div>
@@ -187,30 +187,30 @@ export default function CreateBlogPage() {
               {/* Right Column - Meta Information */}
               <div className="space-y-6">
                 {/* Description Input */}
-                <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                  <label htmlFor="description" className="block text-sm font-medium mb-2">
+                <div className={`p-8 rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm hover:shadow-md transition-shadow duration-200`}>
+                  <label htmlFor="description" className="block text-sm font-medium mb-3">
                     Description
                   </label>
                   <textarea
                     id="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className={`w-full px-4 py-3 rounded-lg border ${
+                    className={`w-full px-5 py-4 rounded-xl border ${
                       isDarkMode
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent h-auto min-h-[120px] resize-y`}
+                        : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500'
+                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 h-auto min-h-[120px] resize-y`}
                     placeholder="Write a brief description of your blog post"
                   />
                 </div>
 
                 {/* Cover Image Upload */}
-                <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                  <label className="block text-sm font-medium mb-2">
+                <div className={`p-8 rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm hover:shadow-md transition-shadow duration-200`}>
+                  <label className="block text-sm font-medium mb-3">
                     Cover Image
                   </label>
-                  <div className={`rounded-lg overflow-hidden ${!coverImage && 'border-2 border-dashed'} ${
-                    isDarkMode ? 'border-gray-700' : 'border-gray-300'
+                  <div className={`rounded-xl overflow-hidden ${!coverImage && 'border-2 border-dashed'} ${
+                    isDarkMode ? 'border-gray-700' : 'border-gray-200'
                   }`}>
                     {coverImage ? (
                       <div className="relative group">
@@ -219,7 +219,7 @@ export default function CreateBlogPage() {
                           alt="Cover"
                           width={800}
                           height={400}
-                          className="w-full aspect-video object-cover rounded-lg"
+                          className="w-full aspect-video object-cover rounded-xl"
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <button
@@ -229,29 +229,29 @@ export default function CreateBlogPage() {
                               setImageUrl('');
                               setImageError('');
                             }}
-                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                            className="p-2.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200"
                           >
                             <X size={20} />
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-4 p-4">
+                      <div className="space-y-4 p-6">
                         {/* URL Input */}
                         <div className="space-y-4">
                           <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                               <Link2 className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} h-5 w-5`} />
                             </div>
                             <input
                               type="url"
                               value={imageUrl}
                               placeholder="Enter image URL"
-                              className={`block w-full pl-10 pr-24 py-2 rounded-lg border ${
+                              className={`block w-full pl-12 pr-24 py-3 rounded-xl border ${
                                 isDarkMode
                                   ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
-                                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                              } focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500'
+                              } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                                 imageError ? 'border-red-500' : ''
                               }`}
                               onChange={(e) => {
@@ -264,7 +264,7 @@ export default function CreateBlogPage() {
                                 type="button"
                                 onClick={handleImagePreview}
                                 disabled={!imageUrl}
-                                className={`h-full px-3 text-white rounded-r-lg transition-colors flex items-center gap-2 ${
+                                className={`h-full px-4 text-white rounded-r-xl transition-colors duration-200 flex items-center gap-2 ${
                                   imageUrl 
                                     ? 'bg-blue-500 hover:bg-blue-600' 
                                     : 'bg-gray-400 cursor-not-allowed'
@@ -282,10 +282,10 @@ export default function CreateBlogPage() {
 
                         <div className="relative">
                           <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-gray-300"></span>
+                            <span className="w-full border-t border-gray-200"></span>
                           </div>
                           <div className="relative flex justify-center text-sm">
-                            <span className={`px-2 ${isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-500'}`}>
+                            <span className={`px-3 ${isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-500'}`}>
                               OR
                             </span>
                           </div>
@@ -307,16 +307,16 @@ export default function CreateBlogPage() {
                           {({ open }) => (
                             <div
                               onClick={() => open()}
-                              className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center hover:border-blue-500 transition-colors ${
+                              className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center hover:border-blue-500 transition-all duration-200 ${
                                 isDarkMode 
                                   ? 'border-gray-700 hover:border-blue-400' 
-                                  : 'border-gray-300'
+                                  : 'border-gray-200'
                               }`}
                             >
                               <Upload className={`mx-auto h-12 w-12 ${
                                 isDarkMode ? 'text-gray-400' : 'text-gray-500'
                               }`} />
-                              <p className={`mt-2 text-sm font-medium ${
+                              <p className={`mt-3 text-sm font-medium ${
                                 isDarkMode ? 'text-gray-200' : 'text-gray-900'
                               }`}>
                                 Click to upload
@@ -335,15 +335,15 @@ export default function CreateBlogPage() {
                 </div>
 
                 {/* Tags Section */}
-                <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                  <div className="flex justify-between items-center mb-3">
+                <div className={`p-8 rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm hover:shadow-md transition-shadow duration-200`}>
+                  <div className="flex justify-between items-center mb-4">
                     <label className="block text-sm font-medium">Tags</label>
                     <button
                       type="button"
                       onClick={() => setIsTagModalOpen(true)}
-                      className="text-blue-500 hover:text-blue-600 text-xs flex items-center gap-1"
+                      className="text-blue-500 hover:text-blue-600 text-sm flex items-center gap-1.5 transition-colors duration-200"
                     >
-                      <TagIcon size={12} />
+                      <TagIcon size={14} />
                       Add Tag
                     </button>
                   </div>
@@ -360,7 +360,7 @@ export default function CreateBlogPage() {
                           }
                         }}
                         className={`
-                          inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium
+                          inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium
                           cursor-pointer transition-all duration-200 select-none
                           ${selectedTagIds.includes(tag.id)
                             ? isDarkMode
@@ -380,7 +380,7 @@ export default function CreateBlogPage() {
                             handleDeleteTag(tag.id);
                           }}
                           className={`
-                            ml-1 rounded-full p-0.5 hover:bg-opacity-80
+                            ml-1 rounded-full p-1 hover:bg-opacity-80 transition-colors duration-200
                             ${selectedTagIds.includes(tag.id)
                               ? isDarkMode
                                 ? 'hover:bg-blue-500/30'
@@ -391,12 +391,12 @@ export default function CreateBlogPage() {
                             }
                           `}
                         >
-                          <X size={10} />
+                          <X size={12} />
                         </button>
                       </div>
                     ))}
                     {allTags.length === 0 && (
-                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                         No tags available. Create one to get started.
                       </p>
                     )}
@@ -452,9 +452,10 @@ export default function CreateBlogPage() {
                 }}
                 disabled={isSubmitting}
                 className={`
-                  px-6 py-3 rounded-lg font-medium flex items-center gap-2
+                  px-8 py-3.5 rounded-xl font-medium flex items-center gap-2 text-base
                   ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}
                   ${isDarkMode ? 'bg-blue-500 text-white' : 'bg-blue-600 text-white'}
+                  transition-all duration-200 shadow-sm hover:shadow-md
                 `}
               >
                 {isSubmitting ? 'Creating...' : 'Create Blog Post'}
@@ -465,42 +466,42 @@ export default function CreateBlogPage() {
           {/* Tag Creation Modal */}
           {isTagModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-xl w-96`}>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-medium">Create New Tag</h3>
+              <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-8 rounded-2xl w-full max-w-md shadow-xl`}>
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-medium">Create New Tag</h3>
                   <button
                     type="button"
                     onClick={() => setIsTagModalOpen(false)}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
                   >
-                    <X size={20} />
+                    <X size={24} />
                   </button>
                 </div>
                 <input
                   type="text"
                   value={newTagName}
                   onChange={(e) => setNewTagName(e.target.value)}
-                  className={`w-full px-4 py-2 rounded-lg border mb-4 ${
+                  className={`w-full px-5 py-3 rounded-xl border mb-6 ${
                     isDarkMode
                       ? 'bg-gray-700 border-gray-600 text-white'
-                      : 'bg-white border-gray-300 text-gray-900'
-                  }`}
+                      : 'bg-white border-gray-200 text-gray-900'
+                  } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
                   placeholder="Enter tag name"
                 />
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-3">
                   <button
                     type="button"
                     onClick={() => setIsTagModalOpen(false)}
-                    className={`px-4 py-2 rounded-lg ${
+                    className={`px-6 py-2.5 rounded-xl ${
                       isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'
-                    }`}
+                    } transition-all duration-200`}
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleCreateTag}
-                    className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
+                    className="px-6 py-2.5 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200"
                   >
                     Create
                   </button>

@@ -38,3 +38,6 @@ exports.userRoutes.get("/projects", user_controllers_1.getProjects);
 exports.userRoutes.post("/projects", verify_middlewares_1.verifyJWT, user_controllers_1.addProject);
 exports.userRoutes.put("/projects/:id", verify_middlewares_1.verifyJWT, user_controllers_1.updateProject);
 exports.userRoutes.delete("/projects/:id", verify_middlewares_1.verifyJWT, user_controllers_1.deleteProject);
+// Newsletter
+exports.userRoutes.get("/newsletter", verify_middlewares_1.verifyJWT, user_controllers_1.getNewsletters);
+exports.userRoutes.post("/newsletter", user_controllers_1.addNewsletter);

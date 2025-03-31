@@ -25,6 +25,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import ExpenseTrackerImage from "../assets/expense-tracker.png";
 import filmflareImage from "../assets/filmflare.png";
+import axios from "axios";
+import { Toaster, toast } from "sonner";
 
 const projects = [
   {
@@ -225,6 +227,28 @@ export default function Home() {
   const { isDarkMode } = useGlobalContext();
   const { scrollYProgress } = useScroll();
   const [isMobile, setIsMobile] = useState(false);
+  const [portfolio, setPortfolio] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/portfolio`
+        );
+        setPortfolio(response.data.data);
+      } catch (error) {
+        console.error("Error fetching portfolio:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPortfolio();
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -247,8 +271,145 @@ export default function Home() {
     restDelta: 0.001,
   });
 
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error("Please enter your email");
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/newsletter`, { email });
+      toast.success("Successfully subscribed to newsletter!");
+      setEmail("");
+    } catch (error) {
+      toast.error("Failed to subscribe. Please try again.");
+      console.error("Newsletter subscription error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading || !portfolio) {
+    return (
+      <main className={`min-h-screen w-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1 text-center md:text-left">
+              <div className={`h-12 md:h-16 w-48 md:w-64 rounded-lg mb-4 animate-pulse ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-200"
+              }`} />
+              <div className={`h-6 w-32 rounded-lg animate-pulse ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-200"
+              }`} />
+            </div>
+            <div className="shrink-0">
+              <div className={`w-48 h-48 md:w-64 md:h-64 rounded-2xl animate-pulse ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-200"
+              }`} />
+            </div>
+          </div>
+
+          {/* About Section Skeleton */}
+          <div className="mt-12">
+            <div className={`h-8 w-24 rounded-lg mb-4 animate-pulse ${
+              isDarkMode ? "bg-gray-800" : "bg-gray-200"
+            }`} />
+            <div className={`h-32 rounded-lg animate-pulse ${
+              isDarkMode ? "bg-gray-800" : "bg-gray-200"
+            }`} />
+          </div>
+
+          {/* Work Experience Section Skeleton */}
+          <div className="mt-12">
+            <div className={`h-8 w-48 rounded-lg mb-4 animate-pulse ${
+              isDarkMode ? "bg-gray-800" : "bg-gray-200"
+            }`} />
+            <div className={`h-24 rounded-lg animate-pulse ${
+              isDarkMode ? "bg-gray-800" : "bg-gray-200"
+            }`} />
+          </div>
+
+          {/* Education Section Skeleton */}
+          <div className="mt-12">
+            <div className={`h-8 w-32 rounded-lg mb-4 animate-pulse ${
+              isDarkMode ? "bg-gray-800" : "bg-gray-200"
+            }`} />
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className={`h-16 rounded-lg animate-pulse ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-200"
+                }`} />
+              ))}
+            </div>
+          </div>
+
+          {/* Skills Section Skeleton */}
+          <div className="mt-12">
+            <div className={`h-8 w-24 rounded-lg mb-4 animate-pulse ${
+              isDarkMode ? "bg-gray-800" : "bg-gray-200"
+            }`} />
+            <div className="flex flex-wrap gap-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className={`h-8 w-20 rounded-lg animate-pulse ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-200"
+                }`} />
+              ))}
+            </div>
+          </div>
+
+          {/* Projects Section Skeleton */}
+          <div className="mt-24">
+            <div className="text-center mb-8">
+              <div className={`h-8 w-32 rounded-lg mx-auto mb-4 animate-pulse ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-200"
+              }`} />
+              <div className={`h-6 w-48 rounded-lg mx-auto mb-2 animate-pulse ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-200"
+              }`} />
+              <div className={`h-4 w-64 rounded-lg mx-auto animate-pulse ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-200"
+              }`} />
+            </div>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className={`h-64 rounded-lg animate-pulse ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-200"
+                }`} />
+              ))}
+            </div>
+          </div>
+
+          {/* Contact Section Skeleton */}
+          <div className="mt-24">
+            <div className="text-center mb-8">
+              <div className={`h-8 w-32 rounded-lg mx-auto mb-4 animate-pulse ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-200"
+              }`} />
+              <div className={`h-6 w-48 rounded-lg mx-auto mb-2 animate-pulse ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-200"
+              }`} />
+              <div className={`h-4 w-64 rounded-lg mx-auto animate-pulse ${
+                isDarkMode ? "bg-gray-800" : "bg-gray-200"
+              }`} />
+            </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              {[1, 2].map((i) => (
+                <div key={i} className={`h-24 rounded-lg animate-pulse ${
+                  isDarkMode ? "bg-gray-800" : "bg-gray-200"
+                }`} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className={`min-h-screen w-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
+      <Toaster position="top-center" richColors />
       <motion.div
         className={`fixed top-0 left-0 right-0 h-0.5 ${isDarkMode ? "bg-white" : "bg-black"} origin-left z-50`}
         style={{ scaleX }}
@@ -273,13 +434,13 @@ export default function Home() {
                 isDarkMode ? "text-white" : "text-gray-900"
               }`}
             >
-              Hi, I&apos;m Shakib <span className="animate-wave">👋</span>
+              Hi, I&apos;m {portfolio?.name.split(" ")[0] || "Shakib"} <span className="animate-wave">👋</span>
             </motion.h1>
             <motion.p
               variants={itemVariants}
               className={`text-lg ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}
             >
-              Full Stack Developer & UI/UX Enthusiast
+              {portfolio?.bio || "Full Stack Developer & UI/UX Enthusiast"}
             </motion.p>
             <motion.div
               variants={itemVariants}
@@ -327,7 +488,7 @@ export default function Home() {
               }`}
             >
               <Image
-                src="/profile.png"
+                src={portfolio?.image_url || "/profile.png"}
                 alt="Profile Image"
                 width={256}
                 height={256}
@@ -356,13 +517,7 @@ export default function Home() {
                         p-4 rounded-lg 
                         ${isDarkMode ? "bg-gray-900/30" : "bg-gray-50/50"}`}
           >
-            I&apos;m a passionate developer with a focus on web and mobile
-            development. I enjoy learning new technologies, creating
-            innovative solutions, and exploring the intersection of AI and
-            business. Currently, I&apos;m working on personal projects to
-            enhance my skills in JavaScript, Kotlin, and more. Always open
-            to collaborating and learning from others. Let&apos;s build
-            something awesome together!
+            {portfolio?.about || "I&apos;m a passionate developer with a focus on web and mobile development. I enjoy learning new technologies, creating innovative solutions, and exploring the intersection of AI and business. Currently, I&apos;m working on personal projects to enhance my skills in JavaScript, Kotlin, and more. Always open to collaborating and learning from others. Let&apos;s build something awesome together!"}
           </motion.p>
         </motion.section>
 
@@ -407,44 +562,41 @@ export default function Home() {
           >
             Education
           </motion.h2>
-          <Timeline
-            defaultValue={3}
-            orientation={isMobile ? "vertical" : "horizontal"}
-            className={`white`}
-          >
-            {[
-              {
-                degree: "Higher Secondary Certificate (HSC)",
-                status: "Trying to pass",
-                timeline: "2024-2026",
-              },
-              {
-                degree: "Secondary School Certificate (SSC)",
-                status: "Successfully passed",
-                timeline: "2022-2024",
-              },
-              {
-                degree: "Junior School Certificate (JSC)",
-                status: "Successfully passed",
-                timeline: "2021",
-              },
-            ].map((item, index) => (
-              <TimelineItem
-                key={index}
-                step={index}
-                isDarkMode={isDarkMode}
-                className={`${isDarkMode ? "text-gray-100" : ""}`}
-              >
-                <TimelineHeader>
-                  <TimelineSeparator />
-                  <TimelineDate className={`${isDarkMode ? "text-gray-200 opacity-70" : ""}`}>{item.timeline}</TimelineDate>
-                  <TimelineTitle >{item.degree}</TimelineTitle>
-                  <TimelineIndicator isDarkMode={isDarkMode} />
-                </TimelineHeader>
-                <TimelineContent className={`${isDarkMode ? "text-gray-200 opacity-70" : ""}`}>{item.status}</TimelineContent>
-              </TimelineItem>
-            ))}
-          </Timeline>
+          {portfolio?.education && portfolio.education.length > 0 ? (
+            <Timeline
+              defaultValue={3}
+              orientation={isMobile ? "vertical" : "horizontal"}
+              className={`white`}
+            >
+              {portfolio.education.map((item: any, index: number) => (
+                <TimelineItem
+                  key={index}
+                  step={index}
+                  isDarkMode={isDarkMode}
+                  className={`${isDarkMode ? "text-gray-100" : ""}`}
+                >
+                  <TimelineHeader>
+                    <TimelineSeparator />
+                    <TimelineDate className={`${isDarkMode ? "text-gray-200 opacity-70" : ""}`}>
+                      {new Date(item.startDate).getFullYear()} - {new Date(item.endDate).getFullYear()}
+                    </TimelineDate>
+                    <TimelineTitle >{item.degree}</TimelineTitle>
+                    <TimelineIndicator isDarkMode={isDarkMode} />
+                  </TimelineHeader>
+                  <TimelineContent className={`${isDarkMode ? "text-gray-200 opacity-70" : ""}`}>{item.status}</TimelineContent>
+                </TimelineItem>
+              ))}
+            </Timeline>
+          ) : (
+            <motion.p
+              variants={itemVariants}
+              className={`text-lg ${isDarkMode ? "text-gray-300" : "text-gray-600"} p-4 rounded-lg ${
+                isDarkMode ? "bg-gray-900/30" : "bg-gray-50/50"
+              }`}
+            >
+              No Educational Qualifications Found
+            </motion.p>
+          )}
         </motion.section>
 
         {/* Skills Section */}
@@ -460,32 +612,40 @@ export default function Home() {
           >
             Skills
           </motion.h2>
-          <motion.div
-            variants={containerVariants}
-            className="flex flex-wrap gap-3 justify-center md:justify-start"
-          >
-            {[
-              "React", "Next.js", "TypeScript", "Node.js",
-              "Python", "Postgres", "Docker", "Java", "Kotlin"
-            ].map((skill, index) => (
-              <motion.div
-                key={index}
-                variants={cardHoverVariants}
-                initial="initial"
-                whileHover="hover"
-                whileTap="tap"
-                className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer
-                  transition-all duration-300
-                  ${
-                  isDarkMode 
-                    ? "bg-white/10 text-white hover:bg-white/20" 
-                    : "bg-gray-900/5 text-gray-900 hover:bg-gray-900/10"
-                  }`}
-              >
-                {skill}
-              </motion.div>
-            ))}
-          </motion.div>
+          {portfolio?.skills && portfolio.skills.length > 0 ? (
+            <motion.div
+              variants={containerVariants}
+              className="flex flex-wrap gap-3 justify-center md:justify-start"
+            >
+              {portfolio.skills.map((skill: any, index: number) => (
+                <motion.div
+                  key={index}
+                  variants={cardHoverVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  whileTap="tap"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer
+                    transition-all duration-300
+                    ${
+                    isDarkMode 
+                      ? "bg-white/10 text-white hover:bg-white/20" 
+                      : "bg-gray-900/5 text-gray-900 hover:bg-gray-900/10"
+                    }`}
+                >
+                  {skill.label}
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.p
+              variants={itemVariants}
+              className={`text-lg ${isDarkMode ? "text-gray-300" : "text-gray-600"} p-4 rounded-lg ${
+                isDarkMode ? "bg-gray-900/30" : "bg-gray-50/50"
+              }`}
+            >
+              No Skills Found
+            </motion.p>
+          )}
         </motion.section>
 
         {/* Projects Section */}
@@ -518,114 +678,128 @@ export default function Home() {
               className={`text-lg transition-colors duration-300
                 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              I&apos;ve worked on a variety of projects, from simple
-              websites to complex web applications.
+              {portfolio?.projects && portfolio.projects.length > 0 
+                ? "I've worked on a variety of projects, from simple websites to complex web applications." 
+                : "No projects found yet"}
             </motion.p>
           </motion.div>
 
-          <Swiper className="mySwiper" rewind={true} grabCursor={true} autoplay={{ delay: 2000 }} >
-            {projects.map((item, index) => (
-              <SwiperSlide key={index}>
-                <motion.div
-                  variants={cardHoverVariants}
-                  initial="initial"
-                  whileHover="hover"
-                  whileTap="tap"
-                  className={`rounded-lg overflow-hidden border ${
-                    isDarkMode ? "border-gray-800" : "border-gray-200"
-                  }`}
-                >
-                  {/* Grid Container */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Image Section */}
-                    <div className="relative h-[160px] sm:h-[240px] md:h-full">
-                      <Image
-                        src={item.image}
-                        alt="Filmflare Image"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
+          {portfolio?.projects && portfolio.projects.length > 0 ? (
+            <Swiper className="mySwiper" rewind={true} grabCursor={true} autoplay={{ delay: 2000 }} >
+              {portfolio.projects.map((item: any, index: number) => (
+                <SwiperSlide key={index}>
+                  <motion.div
+                    variants={cardHoverVariants}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
+                    className={`rounded-lg overflow-hidden border ${
+                      isDarkMode ? "border-gray-800" : "border-gray-200"
+                    }`}
+                  >
+                    {/* Grid Container */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Image Section */}
+                      <div className="relative h-[160px] sm:h-[240px] md:h-full">
+                        <Image
+                          src={item.image_url}
+                          alt="Filmflare Image"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
 
-                    {/* Content Section */}
-                    <div className="p-4">
-                      <motion.h3
-                        variants={itemVariants}
-                        className={`text-xl font-bold mb-1 ${
-                          isDarkMode && "text-gray-100"
-                        }`}
-                      >
-                        {item.name}
-                      </motion.h3>
-                      <motion.p
-                        variants={itemVariants}
-                        className="text-xs text-gray-500 dark:text-gray-400 mb-2"
-                      >
-                        {item.timeline}
-                      </motion.p>
-                      <motion.p
-                        variants={itemVariants}
-                        className={`text-sm mb-3 line-clamp-2 ${
-                          isDarkMode ? "text-gray-300" : "text-gray-600"
-                        }`}
-                      >
-                        {item.details}
-                      </motion.p>
-                      <motion.div
-                        variants={itemVariants}
-                        className="flex flex-wrap gap-1 mb-3"
-                      >
-                        {item.techStacks.map((tech, index) => (
-                          <motion.span
-                            key={index}
-                            variants={itemVariants}
-                            className={`px-2 py-1 rounded-full text-xs ${
-                              isDarkMode
-                                ? "bg-gray-800 text-gray-300 border border-gray-700"
-                                : "bg-gray-100 text-gray-800 border border-gray-200"
-                            }`}
-                          >
-                            {tech}
-                          </motion.span>
-                        ))}
-                      </motion.div>
-                      <motion.a
-                        variants={buttonVariants}
-                        initial="initial"
-                        whileHover="hover"
-                        whileTap="tap"
-                        target="_blank"
-                        href={item.url}
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium 
-                          ${
-                            isDarkMode
-                              ? "bg-gray-800 text-gray-200 hover:bg-gray-700"
-                              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                      {/* Content Section */}
+                      <div className="p-4">
+                        <motion.h3
+                          variants={itemVariants}
+                          className={`text-xl font-bold mb-1 ${
+                            isDarkMode && "text-gray-100"
                           }`}
-                      >
-                        <svg
-                          className="transition-transform duration-300 group-hover:scale-110"
-                          width="24"
-                          height="24"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                          />
-                        </svg>
-                        Website
-                      </motion.a>
+                          {item.name}
+                        </motion.h3>
+                        <motion.p
+                          variants={itemVariants}
+                          className="text-xs text-gray-500 dark:text-gray-400 mb-2"
+                        >
+                          {new Date(item.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} - {new Date(item.endDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </motion.p>
+                        <motion.p
+                          variants={itemVariants}
+                          className={`text-sm mb-3 line-clamp-2 ${
+                            isDarkMode ? "text-gray-300" : "text-gray-600"
+                          }`}
+                        >
+                          {item.description}
+                        </motion.p>
+                        <motion.div
+                          variants={itemVariants}
+                          className="flex flex-wrap gap-1 mb-3"
+                        >
+                          {item.skills.map((skill: any, index: number) => (
+                            <motion.span
+                              key={index}
+                              variants={itemVariants}
+                              className={`px-2 py-1 rounded-full text-xs ${
+                                isDarkMode
+                                  ? "bg-gray-800 text-gray-300 border border-gray-700"
+                                  : "bg-gray-100 text-gray-800 border border-gray-200"
+                              }`}
+                            >
+                              {skill.label}
+                            </motion.span>
+                          ))}
+                        </motion.div>
+                        <motion.a
+                          variants={buttonVariants}
+                          initial="initial"
+                          whileHover="hover"
+                          whileTap="tap"
+                          target="_blank"
+                          href={item.url}
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium 
+                            ${
+                              isDarkMode
+                                ? "bg-gray-800 text-gray-200 hover:bg-gray-700"
+                                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                            }`}
+                        >
+                          <svg
+                            className="transition-transform duration-300 group-hover:scale-110"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                            />
+                          </svg>
+                          Website
+                        </motion.a>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                  </motion.div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          ) : (
+            <motion.div
+              variants={itemVariants}
+              className={`text-center p-8 rounded-lg ${
+                isDarkMode ? "bg-gray-900/30" : "bg-gray-50/50"
+              }`}
+            >
+              <p className={`text-lg ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+                No projects available at the moment. Check back later!
+              </p>
+            </motion.div>
+          )}
         </motion.section>
 
         {/* Contact Section */}
@@ -727,7 +901,7 @@ export default function Home() {
                       isDarkMode ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    mdshakibkhan.dev@gmail.com
+                    {portfolio?.email || "mdshakibkhan.dev@gmail.com"}
                   </motion.p>
                 </motion.div>
               </motion.div>
@@ -739,7 +913,7 @@ export default function Home() {
               whileHover="hover"
               whileTap="tap"
               target="_blank"
-              href="https://x.com/shakib_khan_dev"
+              href={portfolio?.x_url || "https://x.com/shakib_khan_dev"}
               className={`group p-6 rounded-2xl transition-all duration-300
                 ${
                   isDarkMode
@@ -793,7 +967,7 @@ export default function Home() {
                       isDarkMode ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    @shakib_khan_dev
+                    {`@${portfolio?.x_url.split("/").pop()}` || "@shakib_khan_dev"}
                   </motion.p>
                 </motion.div>
               </motion.div>
@@ -836,12 +1010,14 @@ export default function Home() {
             
             <motion.form 
               variants={containerVariants}
-              onSubmit={(e) => e.preventDefault()} 
+              onSubmit={handleNewsletterSubmit}
               className="flex flex-col md:flex-row gap-4"
             >
               <motion.input
                 variants={itemVariants}
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 className={`flex-1 px-4 py-3 rounded-lg text-sm md:text-base outline-none ${
                   isDarkMode 
@@ -855,13 +1031,14 @@ export default function Home() {
                 whileHover="hover"
                 whileTap="tap"
                 type="submit"
+                disabled={isSubmitting}
                 className={`px-6 py-3 cursor-pointer rounded-lg font-medium ${
                   isDarkMode 
                     ? "bg-white text-gray-900 hover:bg-gray-100" 
                     : "bg-gray-900 text-white hover:bg-gray-800"
-                }`}
+                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                Subscribe
+                {isSubmitting ? "Subscribing..." : "Subscribe"}
               </motion.button>
             </motion.form>
           </motion.div>
