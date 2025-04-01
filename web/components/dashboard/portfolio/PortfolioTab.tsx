@@ -59,6 +59,7 @@ interface Project {
   endDate: string;
   image_url: string;
   web_url: string;
+  github_url?: string;
   technologies?: string;
 }
 
@@ -104,7 +105,11 @@ export default function PortfolioTab() {
           },
         }
       );
-      setPortfolio(response.data.data);
+      if (response.data.data.length > 0) {
+        setPortfolio(response.data.data[0]);
+      } else {
+        setPortfolio(null);
+      }
     } catch (error) {
       toast.error("Failed to fetch portfolio data");
       console.error("Error fetching portfolio:", error);
@@ -452,7 +457,7 @@ export default function PortfolioTab() {
         isDarkMode={isDarkMode}
         content={
           <ItemList
-            items={portfolio.projects}
+            items={portfolio.projects ? portfolio.projects : []}
             type="projects"
             renderItem={(item) => (
               <ProjectItem project={item as Project} isDarkMode={isDarkMode} />
@@ -486,10 +491,10 @@ export default function PortfolioTab() {
         isDarkMode={isDarkMode}
         content={
           <ItemList
-            items={portfolio.education}
+            items={portfolio.education ? portfolio.education : []}
             type="education"
             renderItem={(edu) => (
-              <EducationItem education={edu} isDarkMode={isDarkMode} />
+              'institution' in edu ? <EducationItem education={edu} isDarkMode={isDarkMode} /> : null
             )}
             onDelete={(id: string) =>
               setModalState({
@@ -524,7 +529,7 @@ export default function PortfolioTab() {
         isDarkMode={isDarkMode}
         content={
           <ItemList
-            items={portfolio.workExperience}
+            items={portfolio.workExperience ? portfolio.workExperience : []}
             type="workExperience"
             renderItem={(work) => (
               <WorkExperienceItem work={work as WorkExperience} isDarkMode={isDarkMode} />
@@ -562,7 +567,7 @@ export default function PortfolioTab() {
         isDarkMode={isDarkMode}
         content={
           <ItemList
-            items={portfolio.skills}
+            items={portfolio.skills ? portfolio.skills : []}
             type="skills"
             renderItem={(skill) => (
               <SkillItem skill={skill as Skill} isDarkMode={isDarkMode} />
@@ -1037,9 +1042,9 @@ interface Item {
 }
 
 interface ItemListProps {
-  items: Item[];
+  items: (Project | Education | WorkExperience | Skill)[];
   type: string;
-  renderItem: (item: Item) => React.ReactNode;
+  renderItem: (item: Project | Education | WorkExperience | Skill) => React.ReactNode;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   isDarkMode: boolean;
@@ -1075,7 +1080,7 @@ export const ItemList = ({
       initial="hidden"
       animate="visible"
     >
-      {items.length > 0 ? (
+      {items && items.length > 0 ? (
         <div className={`grid ${
           type === "projects" 
             ? "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3" 
@@ -1372,11 +1377,12 @@ export const AddModal = ({ type, isOpen, onClose, onSubmit, isDarkMode, portfoli
       if (field.required && !formData[field.name]) {
         newErrors[field.name] = `${field.label} is required`;
       }
-      if (field.name === "url" && formData[field.name]) {
+      // Validate URLs for any field that contains 'url' in its name
+      if (field.name.toLowerCase().includes('url') && formData[field.name]) {
         try {
           new URL(formData[field.name]);
         } catch (error) {
-          newErrors[field.name] = "Invalid URL format";
+          newErrors[field.name] = "Please enter a valid URL";
         }
       }
     });
@@ -1384,15 +1390,69 @@ export const AddModal = ({ type, isOpen, onClose, onSubmit, isDarkMode, portfoli
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleImagePreview = () => {
-    try {
-      const url = new URL(imageUrl);
-      setFormData({ ...formData, image_url: imageUrl });
-      setImageUrl("");
-      setImageError("");
-    } catch {
-      setImageError("Please enter a valid image URL");
+  const handleImagePreview = async () => {
+    if (!imageUrl) {
+      setImageError("Please enter an image URL");
+      return;
     }
+
+    // Validate URL format
+    try {
+      new URL(imageUrl);
+    } catch (error) {
+      setImageError("Please enter a valid URL");
+      return;
+    }
+
+    // Check if URL ends with common image extensions
+    const validImageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+    const hasValidExtension = validImageExtensions.some(ext => 
+      imageUrl.toLowerCase().endsWith(ext)
+    );
+
+    if (!hasValidExtension) {
+      setImageError("Please enter a valid image URL (jpg, jpeg, png, gif, webp, or svg)");
+      return;
+    }
+
+    try {
+      const img = new window.Image();
+      img.onload = () => {
+        setFormData(prev => ({ ...prev, image_url: imageUrl }));
+        setImageError("");
+      };
+      img.onerror = () => {
+        setImageError("Invalid image URL or image cannot be loaded");
+      };
+      img.src = imageUrl;
+    } catch (error) {
+      setImageError("Invalid image URL or image cannot be loaded");
+    }
+  };
+
+  // Update isFormValid to include URL validation
+  const isFormValid = () => {
+    return fields[type].every((field) => {
+      if (!field.required) return true;
+      
+      if (field.type === "skills") {
+        return selectedSkills.length > 0;
+      }
+      
+      const value = formData[field.name];
+      if (!value) return false;
+
+      // Validate URLs for any field that contains 'url' in its name
+      if (field.name.toLowerCase().includes('url')) {
+        try {
+          new URL(value);
+        } catch (error) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
   };
 
   if (!isOpen) return null;
@@ -1639,10 +1699,10 @@ export const AddModal = ({ type, isOpen, onClose, onSubmit, isDarkMode, portfoli
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              onClick={onSubmit}
-              disabled={isSubmitting}
+              onClick={handleSubmit}
+              disabled={isSubmitting || !isFormValid()}
               className={`px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all flex items-center gap-2 cursor-pointer ${
-                isSubmitting
+                isSubmitting || !isFormValid()
                   ? "opacity-75 cursor-not-allowed"
                   : "hover:shadow-lg"
               }`}
@@ -1683,6 +1743,7 @@ export const CreatePortfolioModal = ({
     name: "",
     email: "",
     about: "",
+    bio: "",
     image_url: "",
     x_url: "",
     github_url: "",
@@ -1691,14 +1752,16 @@ export const CreatePortfolioModal = ({
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [imageError, setImageError] = useState("");
+  const [uploadType, setUploadType] = useState<'url' | 'upload'>('upload');
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.name) newErrors.name = "Name is required";
     if (!formData.email) newErrors.email = "Email is required";
     if (!formData.about) newErrors.about = "About is required";
-    if (!formData.image_url)
-      newErrors.image_url = "Profile image URL is required";
+    if (!formData.image_url) newErrors.image_url = "Profile image is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -1715,6 +1778,38 @@ export const CreatePortfolioModal = ({
     }
   };
 
+  const handleImagePreview = async () => {
+    if (!imageUrl) {
+      setImageError("Please enter an image URL");
+      return;
+    }
+
+    try {
+      const img = new window.Image();
+      img.onload = () => {
+        setFormData(prev => ({ ...prev, image_url: imageUrl }));
+        setImageError("");
+      };
+      img.onerror = () => {
+        setImageError("Invalid image URL");
+      };
+      img.src = imageUrl;
+    } catch (error) {
+      setImageError("Invalid image URL");
+    }
+  };
+
+  // Add this new function to handle image upload success
+  const handleImageUploadSuccess = (result: any) => {
+    if (result.info) {
+      setFormData(prev => ({
+        ...prev,
+        image_url: result.info.secure_url
+      }));
+      setImageError("");
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -1722,35 +1817,49 @@ export const CreatePortfolioModal = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <motion.div
-        initial={{ scale: 0.9 }}
-        animate={{ scale: 1 }}
-        exit={{ scale: 0.9 }}
-        className={`p-8 rounded-xl w-[600px] max-h-[90vh] overflow-y-auto ${
-          isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-        } shadow-2xl`}
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className={`p-6 rounded-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto ${
+          isDarkMode ? "bg-gray-900" : "bg-white"
+        } shadow-xl border ${
+          isDarkMode ? "border-gray-800" : "border-gray-200"
+        }`}
       >
-        <h3 className="text-2xl font-bold mb-6">Create Your Portfolio</h3>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className={`text-xl font-semibold ${
+            isDarkMode ? "text-white" : "text-gray-900"
+          }`}>
+            Create Your Portfolio
+          </h3>
+          <button
+            onClick={onClose}
+            className={`p-2 rounded-lg transition-colors ${
+              isDarkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"
+            }`}
+          >
+            <X className={`w-5 h-5 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Form fields with updated styling */}
           <div>
-            <label
-              className={`block mb-2 font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+            <label className={`block mb-2 text-sm font-medium text-left ${
+              isDarkMode ? "text-gray-300" : "text-gray-700"
+            }`}>
               Name
             </label>
             <input
               type="text"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              className={`w-full p-3 border rounded-lg ${
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className={`w-full p-2.5 rounded-lg border ${
                 isDarkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
+                  ? "bg-gray-800 border-gray-700 text-white"
                   : "bg-white border-gray-300 text-gray-900"
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
               required
@@ -1761,22 +1870,18 @@ export const CreatePortfolioModal = ({
           </div>
 
           <div>
-            <label
-              className={`block mb-2 font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+            <label className={`block mb-2 text-sm font-medium text-left ${
+              isDarkMode ? "text-gray-300" : "text-gray-700"
+            }`}>
               Email
             </label>
             <input
               type="email"
               value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              className={`w-full p-3 border rounded-lg ${
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className={`w-full p-2.5 rounded-lg border ${
                 isDarkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
+                  ? "bg-gray-800 border-gray-700 text-white"
                   : "bg-white border-gray-300 text-gray-900"
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
               required
@@ -1787,21 +1892,17 @@ export const CreatePortfolioModal = ({
           </div>
 
           <div>
-            <label
-              className={`block mb-2 font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+            <label className={`block mb-2 text-sm font-medium text-left ${
+              isDarkMode ? "text-gray-300" : "text-gray-700"
+            }`}>
               About
             </label>
             <textarea
               value={formData.about}
-              onChange={(e) =>
-                setFormData({ ...formData, about: e.target.value })
-              }
-              className={`w-full p-3 border rounded-lg ${
+              onChange={(e) => setFormData({ ...formData, about: e.target.value })}
+              className={`w-full p-2.5 rounded-lg border ${
                 isDarkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
+                  ? "bg-gray-800 border-gray-700 text-white"
                   : "bg-white border-gray-300 text-gray-900"
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
               rows={4}
@@ -1813,127 +1914,225 @@ export const CreatePortfolioModal = ({
           </div>
 
           <div>
-            <label
-              className={`block mb-2 font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
-              Profile Image URL
+            <label className={`block mb-2 text-sm font-medium text-left ${
+              isDarkMode ? "text-gray-300" : "text-gray-700"
+            }`}>
+              Bio
             </label>
-            <input
-              type="url"
-              value={formData.image_url}
-              onChange={(e) =>
-                setFormData({ ...formData, image_url: e.target.value })
-              }
-              className={`w-full p-3 border rounded-lg ${
+            <textarea
+              value={formData.bio}
+              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+              className={`w-full p-2.5 rounded-lg border ${
                 isDarkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
+                  ? "bg-gray-800 border-gray-700 text-white"
                   : "bg-white border-gray-300 text-gray-900"
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
-              required
+              rows={4}
+              placeholder="Write a short bio about yourself..."
             />
+          </div>
+
+          <div>
+            <label className={`block mb-2 text-sm font-medium text-left ${
+              isDarkMode ? "text-gray-300" : "text-gray-700"
+            }`}>
+              Profile Image
+            </label>
+            
+            {formData.image_url ? (
+              <div className="relative inline-block">
+                <img
+                  src={formData.image_url}
+                  alt="Profile preview"
+                  className="w-32 h-32 object-cover rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData(prev => ({ ...prev, image_url: "" }));
+                    setImageUrl("");
+                    setImageError("");
+                  }}
+                  className={`absolute -top-2 -right-2 p-1.5 rounded-full ${
+                    isDarkMode 
+                      ? "bg-gray-800 hover:bg-gray-700" 
+                      : "bg-white hover:bg-gray-100"
+                  } shadow-md transition-colors`}
+                >
+                  <X className={`w-4 h-4 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`} />
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* URL Input */}
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Link2 className={`${isDarkMode ? "text-gray-400" : "text-gray-500"} h-5 w-5`} />
+                  </div>
+                  <input
+                    type="url"
+                    value={imageUrl}
+                    placeholder="Enter image URL"
+                    className={`block w-full pl-10 pr-24 py-2 rounded-lg border ${
+                      isDarkMode
+                        ? "bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+                        : "bg-white border-gray-200 text-gray-900 placeholder-gray-500"
+                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      imageError ? "border-red-500" : ""
+                    }`}
+                    onChange={(e) => {
+                      setImageUrl(e.target.value);
+                      setImageError("");
+                    }}
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center">
+                    <button
+                      type="button"
+                      onClick={handleImagePreview}
+                      disabled={!imageUrl}
+                      className={`h-full px-3 text-white rounded-r-lg transition-colors flex items-center gap-2 cursor-pointer ${
+                        imageUrl
+                          ? "bg-blue-500 hover:bg-blue-600"
+                          : "bg-gray-400 cursor-not-allowed"
+                      }`}
+                    >
+                      <Upload size={16} />
+                      Preview
+                    </button>
+                  </div>
+                </div>
+                {imageError && (
+                  <p className="text-sm text-red-500">{imageError}</p>
+                )}
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-gray-300"></span>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className={`px-2 ${isDarkMode ? "bg-gray-900 text-gray-400" : "bg-gray-100 text-gray-500"}`}>
+                      OR
+                    </span>
+                  </div>
+                </div>
+
+                {/* Cloudinary Upload Widget */}
+                <CldUploadWidget
+                  uploadPreset="images_preset"
+                  onSuccess={handleImageUploadSuccess}
+                >
+                  {({ open }) => (
+                    <div
+                      onClick={() => open()}
+                      className={`cursor-pointer rounded-lg border-2 border-dashed p-4 text-center hover:border-blue-500 transition-colors ${
+                        isDarkMode
+                          ? "border-gray-700 hover:border-blue-400"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      <Upload
+                        className={`mx-auto h-8 w-8 ${
+                          isDarkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <p className={`mt-2 text-sm font-medium ${isDarkMode ? "text-gray-200" : "text-gray-900"}`}>
+                        Click to upload
+                      </p>
+                      <p className={`mt-1 text-xs ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+                        SVG, PNG, JPG or GIF (max. 4MB)
+                      </p>
+                    </div>
+                  )}
+                </CldUploadWidget>
+              </div>
+            )}
             {errors.image_url && (
               <p className="mt-1 text-sm text-red-500">{errors.image_url}</p>
             )}
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
           <div>
-            <label
-              className={`block mb-2 font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+              <label className={`block mb-2 text-sm font-medium text-left ${
+                isDarkMode ? "text-gray-300" : "text-gray-700"
+              }`}>
               X (Twitter) URL
             </label>
             <input
               type="url"
               value={formData.x_url}
-              onChange={(e) =>
-                setFormData({ ...formData, x_url: e.target.value })
-              }
-              className={`w-full p-3 border rounded-lg ${
+                onChange={(e) => setFormData({ ...formData, x_url: e.target.value })}
+                className={`w-full p-2.5 rounded-lg border ${
                 isDarkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
+                    ? "bg-gray-800 border-gray-700 text-white"
                   : "bg-white border-gray-300 text-gray-900"
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
             />
           </div>
 
           <div>
-            <label
-              className={`block mb-2 font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+              <label className={`block mb-2 text-sm font-medium text-left ${
+                isDarkMode ? "text-gray-300" : "text-gray-700"
+              }`}>
               GitHub URL
             </label>
             <input
               type="url"
               value={formData.github_url}
-              onChange={(e) =>
-                setFormData({ ...formData, github_url: e.target.value })
-              }
-              className={`w-full p-3 border rounded-lg ${
+                onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
+                className={`w-full p-2.5 rounded-lg border ${
                 isDarkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
+                    ? "bg-gray-800 border-gray-700 text-white"
                   : "bg-white border-gray-300 text-gray-900"
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
             />
           </div>
 
           <div>
-            <label
-              className={`block mb-2 font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+              <label className={`block mb-2 text-sm font-medium text-left ${
+                isDarkMode ? "text-gray-300" : "text-gray-700"
+              }`}>
               LinkedIn URL
             </label>
             <input
               type="url"
               value={formData.linkedin_url}
-              onChange={(e) =>
-                setFormData({ ...formData, linkedin_url: e.target.value })
-              }
-              className={`w-full p-3 border rounded-lg ${
+                onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+                className={`w-full p-2.5 rounded-lg border ${
                 isDarkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
+                    ? "bg-gray-800 border-gray-700 text-white"
                   : "bg-white border-gray-300 text-gray-900"
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
             />
           </div>
 
           <div>
-            <label
-              className={`block mb-2 font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
+              <label className={`block mb-2 text-sm font-medium text-left ${
+                isDarkMode ? "text-gray-300" : "text-gray-700"
+              }`}>
               Facebook URL
             </label>
             <input
               type="url"
               value={formData.facebook_url}
-              onChange={(e) =>
-                setFormData({ ...formData, facebook_url: e.target.value })
-              }
-              className={`w-full p-3 border rounded-lg ${
+                onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
+                className={`w-full p-2.5 rounded-lg border ${
                 isDarkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
+                    ? "bg-gray-800 border-gray-700 text-white"
                   : "bg-white border-gray-300 text-gray-900"
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
             />
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
+              className={`px-5 py-2 rounded-lg font-medium transition-colors ${
                 isDarkMode
-                  ? "bg-gray-700 hover:bg-gray-600"
-                  : "bg-gray-200 hover:bg-gray-300"
+                  ? "bg-gray-800 hover:bg-gray-700 text-gray-300"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
               }`}
             >
               Cancel
@@ -1941,7 +2140,7 @@ export const CreatePortfolioModal = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2 cursor-pointer ${
+              className={`px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all flex items-center gap-2 ${
                 isSubmitting ? "opacity-75 cursor-not-allowed" : ""
               }`}
             >
@@ -1960,7 +2159,6 @@ export const CreatePortfolioModal = ({
     </motion.div>
   );
 };
-
 
 export const DeleteModal = ({ isOpen, onClose, onConfirm, isDarkMode }: any) => {
   if (!isOpen) return null;
@@ -2568,7 +2766,7 @@ export const ProfileEditModal = ({
   );
 };
 
-export const EducationItem = ({ education, isDarkMode }: any) => {
+export const EducationItem = ({ education, isDarkMode }: { education: Education; isDarkMode: boolean }) => {
   // Format dates to be more compact (e.g., "Jan 2020 - May 2024")
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -2602,7 +2800,7 @@ export const EducationItem = ({ education, isDarkMode }: any) => {
 };
 
 
-export const ProjectItem = ({ project, isDarkMode }: any) => (
+export const ProjectItem = ({ project, isDarkMode }: { project: Project; isDarkMode: boolean }) => (
   <motion.div
     whileHover={{ scale: 1.02 }}
     className="relative w-full h-[200px] rounded-xl overflow-hidden cursor-pointer group"
@@ -2784,7 +2982,7 @@ export const SkillItem = ({ skill, isDarkMode }: SkillItemProps) => {
     </motion.div>
   );
 };
-export const WorkExperienceItem = ({ work, isDarkMode }: any) => (
+export const WorkExperienceItem = ({ work, isDarkMode }: { work: WorkExperience; isDarkMode: boolean }) => (
   <div className="space-y-2 flex-1">
     <h4
       className={`font-semibold ${isDarkMode ? "text-white" : "text-gray-900"}`}

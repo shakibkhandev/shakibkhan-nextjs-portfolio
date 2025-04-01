@@ -239,7 +239,10 @@ export default function Home() {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/portfolio`
         );
-        setPortfolio(response.data.data);
+
+        if (response.data.data.length > 0) {
+          setPortfolio(response.data.data[0]);
+        }
       } catch (error) {
         console.error("Error fetching portfolio:", error);
       } finally {
@@ -291,7 +294,7 @@ export default function Home() {
     }
   };
 
-  if (isLoading || !portfolio) {
+  if (isLoading || !portfolio || portfolio.length === 0) {
     return (
       <main className={`min-h-screen w-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
         <div className="max-w-4xl mx-auto px-4 py-16">
@@ -434,7 +437,7 @@ export default function Home() {
                 isDarkMode ? "text-white" : "text-gray-900"
               }`}
             >
-              Hi, I&apos;m {portfolio?.name.split(" ")[0] || "Shakib"} <span className="animate-wave">👋</span>
+              Hi, I&apos;m {portfolio?.name?.split(" ")[0] || "Shakib"} <span className="animate-wave">👋</span>
             </motion.h1>
             <motion.p
               variants={itemVariants}

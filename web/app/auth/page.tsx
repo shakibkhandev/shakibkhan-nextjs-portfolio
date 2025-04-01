@@ -312,6 +312,21 @@ export default function AuthPage() {
                       : "bg-gray-50 text-gray-900 placeholder:text-gray-500 focus:bg-gray-100"
                   } transition-all duration-300`}
                 />
+                {!isSignUp && (
+                  <div className="mt-2 text-right">
+                    <button
+                    onClick={()=> router.push("/auth/forgot-password")}
+                      type="button"
+                      className={`text-sm font-medium ${
+                        isDarkMode 
+                          ? "text-gray-400 hover:text-white" 
+                          : "text-gray-600 hover:text-gray-900"
+                      } transition-colors duration-200`}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
               </motion.div>
 
               <motion.button

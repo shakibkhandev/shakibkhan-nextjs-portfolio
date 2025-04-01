@@ -67,7 +67,7 @@ model Education {
   endDate    DateTime
   status String
   portfolioId String
-  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
 }
 
 model Skill {
@@ -75,7 +75,7 @@ model Skill {
   label     String @unique
   url String?
   portfolioId String
-  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
   projects Project[]
 }
 
@@ -89,7 +89,7 @@ model Project {
   web_url        String
   skills Skill[]
   portfolioId String
-  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
 }
 
 model WorkExperience {
@@ -99,7 +99,7 @@ model WorkExperience {
   startDate  DateTime
   endDate    DateTime
   portfolioId String
-  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
 }
 
 

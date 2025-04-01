@@ -3,11 +3,21 @@
 import { useGlobalContext } from "@/context/GlobalContextProvider";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function FloatingBottomNavBar() {
   const { isDarkMode, toggleTheme } = useGlobalContext();
 
+  const pathname = usePathname();
+
+  // Check if current path is auth or admin
+  const isExcludedPath = pathname?.startsWith("/auth") || pathname?.startsWith("/admin") || pathname?.startsWith("/blogs");
+
+  // Don't render if we're on an excluded path
+  if (isExcludedPath) {
+    return null;
+  }
 
   return (
     

@@ -9,6 +9,7 @@ import {
   changeCurrentPassword,
   createPortfolio,
   deleteEducation,
+  deleteNewsletter,
   deletePortfolioInformation,
   deleteProfileInformation,
   deleteProject,
@@ -71,3 +72,4 @@ userRoutes.delete("/projects/:id", verifyJWT, deleteProject);
 // Newsletter
 userRoutes.get("/newsletter", verifyJWT, getNewsletters);
 userRoutes.post("/newsletter", addNewsletter);
+userRoutes.delete("/newsletter/:id", verifyJWT, deleteNewsletter);

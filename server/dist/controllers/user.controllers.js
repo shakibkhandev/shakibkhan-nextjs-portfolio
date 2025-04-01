@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addNewsletter = exports.getNewsletters = exports.deleteEducation = exports.updateEducation = exports.addEducation = exports.getEducations = exports.deleteProject = exports.updateProject = exports.addProject = exports.getProjects = exports.deleteSkill = exports.updateSkill = exports.addSkills = exports.getSkills = exports.addWorkExperience = exports.deleteWorkExperience = exports.updateWorkExperience = exports.getWorkExperiences = exports.createPortfolio = exports.deletePortfolioInformation = exports.updatePortfolioInformation = exports.getPortfolioInformation = exports.changeCurrentPassword = exports.deleteProfileInformation = exports.updateProfileInformation = exports.getProfileInformation = void 0;
+exports.deleteNewsletter = exports.addNewsletter = exports.getNewsletters = exports.deleteEducation = exports.updateEducation = exports.addEducation = exports.getEducations = exports.deleteProject = exports.updateProject = exports.addProject = exports.getProjects = exports.deleteSkill = exports.updateSkill = exports.addSkills = exports.getSkills = exports.addWorkExperience = exports.deleteWorkExperience = exports.updateWorkExperience = exports.getWorkExperiences = exports.createPortfolio = exports.deletePortfolioInformation = exports.updatePortfolioInformation = exports.getPortfolioInformation = exports.changeCurrentPassword = exports.deleteProfileInformation = exports.updateProfileInformation = exports.getProfileInformation = void 0;
 const prisma_1 = require("../services/prisma");
 const ApiError_1 = require("../utils/ApiError");
 const ApiResponse_1 = require("../utils/ApiResponse");
@@ -106,11 +106,11 @@ exports.getPortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res) =>
         },
     });
     if (portfolio.length < 1) {
-        throw new ApiError_1.ApiError(404, "Portfolio not found");
+        return res.status(200).json(new ApiResponse_1.ApiResponse(200, portfolio, "Portfolio not found"));
     }
     return res
         .status(200)
-        .json(new ApiResponse_1.ApiResponse(200, portfolio[0], "Portfolio information fetched successfully"));
+        .json(new ApiResponse_1.ApiResponse(200, portfolio, "Portfolio information fetched successfully"));
 }));
 exports.updatePortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const existPortfolio = yield prisma_1.prisma.portfolio.findMany();
@@ -144,7 +144,7 @@ exports.deletePortfolioInformation = (0, asyncHandler_1.asyncHandler)((req, res)
         .json(new ApiResponse_1.ApiResponse(200, portfolio, "Portfolio information deleted successfully"));
 }));
 exports.createPortfolio = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, name, about, image_url, x_url, github_url, linkedin_url, facebook_url, } = req.body;
+    const { email, name, bio, about, image_url, x_url, github_url, linkedin_url, facebook_url, } = req.body;
     // Check if portfolio already exists
     const portfolio = yield prisma_1.prisma.portfolio.findMany();
     if (portfolio.length > 0) {
@@ -155,6 +155,7 @@ exports.createPortfolio = (0, asyncHandler_1.asyncHandler)((req, res) => __await
     // Validate required fields
     if (!email ||
         !name ||
+        !bio ||
         !about ||
         !image_url ||
         !x_url ||
@@ -167,6 +168,7 @@ exports.createPortfolio = (0, asyncHandler_1.asyncHandler)((req, res) => __await
         data: {
             email,
             name,
+            bio,
             about,
             image_url,
             x_url,
@@ -431,10 +433,49 @@ exports.deleteEducation = (0, asyncHandler_1.asyncHandler)((req, res) => __await
         .json(new ApiResponse_1.ApiResponse(200, education, "Education deleted successfully"));
 }));
 exports.getNewsletters = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const newsletters = yield prisma_1.prisma.newsletter.findMany();
+    // Extract pagination parameters from query string with defaults
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    // Get total count for pagination metadata
+    const totalNewsletters = yield prisma_1.prisma.newsletter.count();
+    // Fetch newsletters with pagination
+    const newsletters = yield prisma_1.prisma.newsletter.findMany({
+        skip: skip,
+        take: limit,
+        orderBy: {
+            createdAt: 'desc' // Optional: order by creation date
+        }
+    });
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalNewsletters / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+    // Generate pagination links
+    const baseUrl = `${req.protocol}://${req.get('host')}${req.path}`;
+    const links = {
+        self: `${baseUrl}?page=${page}&limit=${limit}`,
+        first: `${baseUrl}?page=1&limit=${limit}`,
+        last: `${baseUrl}?page=${totalPages}&limit=${limit}`,
+        next: hasNextPage ? `${baseUrl}?page=${page + 1}&limit=${limit}` : null,
+        prev: hasPrevPage ? `${baseUrl}?page=${page - 1}&limit=${limit}` : null,
+    };
+    // Response data structure
+    const responseData = {
+        newsletters,
+        pagination: {
+            currentPage: page,
+            totalPages,
+            totalItems: totalNewsletters,
+            itemsPerPage: limit,
+            hasNextPage,
+            hasPrevPage
+        },
+        links
+    };
     return res
         .status(200)
-        .json(new ApiResponse_1.ApiResponse(200, newsletters, "Newsletters fetched successfully"));
+        .json(new ApiResponse_1.ApiResponse(200, responseData, "Newsletters fetched successfully"));
 }));
 exports.addNewsletter = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
@@ -459,4 +500,13 @@ exports.addNewsletter = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter
     return res
         .status(200)
         .json(new ApiResponse_1.ApiResponse(200, newsletter, "Email added successfully"));
+}));
+exports.deleteNewsletter = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const newsletterId = req.params.id;
+    const newsletter = yield prisma_1.prisma.newsletter.delete({
+        where: { id: newsletterId },
+    });
+    return res
+        .status(200)
+        .json(new ApiResponse_1.ApiResponse(200, newsletter, "Newsletter deleted successfully"));
 }));

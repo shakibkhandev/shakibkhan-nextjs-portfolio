@@ -11,10 +11,10 @@ import { FiMenu, FiX, FiLogOut, FiBell, FiSearch, FiUser } from "react-icons/fi"
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
-import { FiHome, FiEdit3, FiBriefcase } from "react-icons/fi";
+import { FiHome, FiEdit3, FiBriefcase, FiMail } from "react-icons/fi";
+import NewsletterTab from "@/components/dashboard/newsletter/NewsletterTab";
 
-
-type TabType = 'overview' | 'blogs' | 'portfolio' | 'account';
+type TabType = 'overview' | 'blogs' | 'portfolio' | 'account' | 'newsletter';
 
 interface DashboardProps {
   // Add any props that Dashboard component might receive
@@ -35,6 +35,15 @@ export default function Dashboard(props: DashboardProps) {
   const [notifications, setNotifications] = useState(3);
   const router = useRouter();
 
+  // Handle URL parameters on page load
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const tab = searchParams.get('tab') as TabType;
+    if (tab && ['overview', 'blogs', 'portfolio', 'account', 'newsletter'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, []);
+
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
@@ -51,6 +60,7 @@ export default function Dashboard(props: DashboardProps) {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab as TabType);
+    router.push(`/admin/dashboard?tab=${tab}`);
     if (window.innerWidth < 1024) {
       setIsSidebarOpen(false);
     }
@@ -81,6 +91,8 @@ export default function Dashboard(props: DashboardProps) {
         return <PortfolioTab />;
       case 'account':
         return <AccountTab />;
+      case 'newsletter':
+        return <NewsletterTab />;
       default:
         return null;
     }
@@ -239,6 +251,7 @@ const tabs = [
   { id: "overview", label: "Overview", icon: FiHome },
   { id: "blogs", label: "Blogs", icon: FiEdit3 },
   { id: "portfolio", label: "Portfolio", icon: FiBriefcase },
+  { id: "newsletter", label: "Newsletter", icon: FiMail },
   { id: "account", label: "Account", icon: FiUser },
 ];
  function DashboardTabs({

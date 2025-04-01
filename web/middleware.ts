@@ -17,48 +17,71 @@ async function verifyAccessToken(token: string) {
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
-  const isPublicPath = path === '/auth'
   const token = request.cookies.get('access_token')?.value || ''
 
-  // If no token and trying to access protected routes
-  if (!isPublicPath && !token) {
+  // Check if path starts with /auth
+  const isAuthPath = path.startsWith('/auth')
+  // Check if path starts with /admin/dashboard
+  const isAdminDashboardPath = path.startsWith('/admin/dashboard')
+  // Check if path is exactly /admin
+  const isAdminPath = path === '/admin'
+
+  // If not logged in
+  if (!token) {
+    // Allow access to auth paths
+    if (isAuthPath) {
+      return NextResponse.next()
+    }
+    // Redirect to auth for all other paths
     return NextResponse.redirect(new URL('/auth', request.nextUrl))
   }
 
-  // If has token and trying to access auth page
-  if (isPublicPath && token) {
-    return NextResponse.redirect(new URL('/admin', request.nextUrl))
+  // If logged in, verify token
+  const verificationResult = await verifyAccessToken(token)
+  
+  if (!verificationResult) {
+    // Token is invalid
+    const response = NextResponse.redirect(new URL('/auth', request.nextUrl))
+    response.cookies.delete('access_token')
+    response.cookies.delete('refresh_token')
+    return response
   }
 
-  // For protected routes, verify token and check admin status
-  if (!isPublicPath && token) {
-    const verificationResult = await verifyAccessToken(token);
-    
-    if (!verificationResult) {
-      // Token is invalid
-      const response = NextResponse.redirect(new URL('/auth', request.nextUrl));
-      response.cookies.delete('access_token');
-      response.cookies.delete('refresh_token');
-      return response;
+  const isAdmin = verificationResult.isAdmin
+
+  // For logged-in users
+  if (isAdmin) {
+    // Admin can only access dashboard paths
+    if (isAdminDashboardPath) {
+      return NextResponse.next()
     }
-
-    const isAdmin = verificationResult.isAdmin;
-
-    // Admin access control
-    if (isAdmin) {
-      // Admin can't access /admin page, only /admin/dashboard
-      if (path === '/admin') {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.nextUrl))
-      }
-    } else {
-      // Non-admin can only access /admin, not /admin/dashboard
-      if (path === '/admin/dashboard') {
-        return NextResponse.redirect(new URL('/admin', request.nextUrl))
-      }
+    // Redirect admin to dashboard if trying to access /admin
+    if (isAdminPath) {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.nextUrl))
+    }
+    // Redirect admin to dashboard if trying to access auth
+    if (isAuthPath) {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.nextUrl))
+    }
+  } else {
+    // Non-admin can only access /admin
+    if (isAdminPath) {
+      return NextResponse.next()
+    }
+    // Redirect non-admin to /admin if trying to access dashboard
+    if (isAdminDashboardPath) {
+      return NextResponse.redirect(new URL('/admin', request.nextUrl))
+    }
+    // Redirect non-admin to /admin if trying to access auth
+    if (isAuthPath) {
+      return NextResponse.redirect(new URL('/admin', request.nextUrl))
     }
   }
+
+  // Default deny for any other paths
+  return NextResponse.redirect(new URL('/auth', request.nextUrl))
 }
 
 export const config = {
-  matcher: ['/admin', '/admin/dashboard', '/auth']
+  matcher: ['/admin/:path*', '/auth/:path*']
 }

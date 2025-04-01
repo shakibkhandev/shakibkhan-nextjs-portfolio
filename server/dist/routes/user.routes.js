@@ -41,3 +41,4 @@ exports.userRoutes.delete("/projects/:id", verify_middlewares_1.verifyJWT, user_
 // Newsletter
 exports.userRoutes.get("/newsletter", verify_middlewares_1.verifyJWT, user_controllers_1.getNewsletters);
 exports.userRoutes.post("/newsletter", user_controllers_1.addNewsletter);
+exports.userRoutes.delete("/newsletter/:id", verify_middlewares_1.verifyJWT, user_controllers_1.deleteNewsletter);
